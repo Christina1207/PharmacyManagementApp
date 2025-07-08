@@ -1,0 +1,86 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.resharper
+*.dotsettings
+*.bak
+*.cache
+*.log
+*.obj
+*.pdb
+*.stackdump
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x83/
+bld/
+*.map
+*.ncb
+*.opendb
+*.aps
+*.bsc
+*.ilk
+*.lib
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.vsp
+*.exp
+*.dll
+*.exe
+[Dd]ebugPublic/
+[Rr]eleases/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+obj/
+bin/
+
+# Node.js and React
+node_modules/
+build/
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS generated files
+.DS_Store
+.Trashes
+Thumbs.db
+
+# Rider
+.idea/
+*.sln.DotSettings.user
+
+
+# To help manage the sql server connection string
+appsettings.Development.json
+
+
+# Vite/React environment files
+.env.local
+.env.development.local
+.env.production.local
+.env.staging.local
+.env.test.local
