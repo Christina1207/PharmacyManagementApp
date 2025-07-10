@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Infrastructure.Data.Entities;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Data;
+namespace Infrastructure.Context;
 
 public partial class PharmacyDbContext : DbContext
 {
