@@ -1,5 +1,5 @@
 ﻿using Application.DTOs.Supplier;
-using Application.IServices;
+using Application.IServices.Supplier;
 using AutoMapper;
 using Domain.Entities;
 using Domain.IRepositories;

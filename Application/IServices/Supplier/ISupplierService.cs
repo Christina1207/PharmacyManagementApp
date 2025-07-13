@@ -1,7 +1,7 @@
 ﻿using Application.DTOs.Supplier;
 
 
-namespace Application.IServices
+namespace Application.IServices.Supplier
 {
     public interface ISupplierService
     {
