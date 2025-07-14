@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.DTOs.Department;
 
 namespace Application.IServices.Department
 {
-    internal class IDepartmentService
+    public interface IDepartmentService
     {
+        public Task<GetDepartmentDTO> CreateDepartmentAsync(CreateDepartmentDTO dto);
+
+        public Task UpdateDepartmentAsync(UpdateDepartmentDTO dto);
+        public Task DeleteDepartmentAsync(int id);
+        Task<IEnumerable<GetDepartmentDTO>> GetAllDepartmentsAsync();
+        Task<GetDepartmentDTO> GetDepartmentByIdAsync(int id);
+
     }
 }
