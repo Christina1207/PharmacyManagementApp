@@ -3,9 +3,9 @@ using Domain.Entities;
 using Application.DTOs.Supplier;
 namespace Application.MappingProfiles
 {
-    public class CategoryProfile : Profile
+    public class SupplierProfile : Profile
     {
-        public CategoryProfile()
+        public SupplierProfile()
         {
             CreateMap<Supplier, GetSupplierDTO>();
             CreateMap<CreateSupplierDTO, Supplier>();
