@@ -1,10 +1,11 @@
 ﻿using Domain.Entities;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Context;
 
-public partial class PharmacyDbContext : IdentityDbContext
+public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
 {
     public PharmacyDbContext()
     {
@@ -16,59 +17,33 @@ public partial class PharmacyDbContext : IdentityDbContext
     }
 
     public virtual DbSet<ActiveIngredient> ActiveIngredients { get; set; }
-
     public virtual DbSet<Department> Departments { get; set; }
-
     public virtual DbSet<Diagnosis> Diagnoses { get; set; }
-
     public virtual DbSet<Doctor> Doctors { get; set; }
-
     public virtual DbSet<Employee> Employees { get; set; }
-
     public virtual DbSet<FamilyMember> FamilyMembers { get; set; }
-
     public virtual DbSet<InsuredPerson> InsuredPeople { get; set; }
-
     public virtual DbSet<InventoryCheck> InventoryChecks { get; set; }
-
     public virtual DbSet<InventoryCheckItem> InventoryCheckItems { get; set; }
-
     public virtual DbSet<InventoryItem> InventoryItems { get; set; }
-
     public virtual DbSet<InventoryItemDetail> InventoryItemDetails { get; set; }
-
     public virtual DbSet<Manufacturer> Manufacturers { get; set; }
-
     public virtual DbSet<Medication> Medications { get; set; }
-
     public virtual DbSet<MedicationActiveIngredient> MedicationActiveIngredients { get; set; }
-
     public virtual DbSet<MedicationClass> MedicationClasses { get; set; }
-
     public virtual DbSet<MedicationForm> MedicationForms { get; set; }
-
     public virtual DbSet<Order> Orders { get; set; }
-
     public virtual DbSet<OrderItem> OrderItems { get; set; }
-
     public virtual DbSet<Prescription> Prescriptions { get; set; }
-
     public virtual DbSet<PrescriptionItem> PrescriptionItems { get; set; }
-
-    public virtual DbSet<Role> Roles { get; set; }
-
     public virtual DbSet<Sale> Sales { get; set; }
-
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=CHRISTINA;Initial Catalog=PharmacyDB;Integrated Security=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<ActiveIngredient>(entity =>
         {
             entity.ToTable("ActiveIngredient");
@@ -138,17 +113,17 @@ public partial class PharmacyDbContext : IdentityDbContext
 
         modelBuilder.Entity<FamilyMember>(entity =>
         {
-            entity.HasKey(e => e.CoveredPersonId);
+            entity.HasKey(e => e.InsuredPersonId);
 
             entity.ToTable("FamilyMember");
 
-            entity.Property(e => e.CoveredPersonId).ValueGeneratedOnAdd();
+            entity.Property(e => e.InsuredPersonId).ValueGeneratedOnAdd();
             entity.Property(e => e.Relationship)
                 .HasMaxLength(50)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.CoveredPerson).WithOne(p => p.FamilyMember)
-                .HasForeignKey<FamilyMember>(d => d.CoveredPersonId)
+            entity.HasOne(d => d.InsuredPerson).WithOne(p => p.FamilyMember)
+                .HasForeignKey<FamilyMember>(d => d.InsuredPersonId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_FamilyMember_InsuredPerson");
 
@@ -388,11 +363,8 @@ public partial class PharmacyDbContext : IdentityDbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.ToTable("Role", tb => tb.HasComment("User Role"));
+            entity.ToTable("Role");
 
-            entity.Property(e => e.Name)
-                .HasMaxLength(50)
-                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Sale>(entity =>
@@ -437,15 +409,14 @@ public partial class PharmacyDbContext : IdentityDbContext
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Username)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_User_Role");
+           
         });
+
+        modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("UserClaims");
+        modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("UserLogins");
+        modelBuilder.Entity<IdentityUserToken<int>>().ToTable("UserTokens");
+        modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims");
+        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("UserRoles");
 
         OnModelCreatingPartial(modelBuilder);
     }
