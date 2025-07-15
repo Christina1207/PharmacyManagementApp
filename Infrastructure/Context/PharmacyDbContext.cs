@@ -1,9 +1,10 @@
 ﻿using Domain.Entities;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Context;
 
-public partial class PharmacyDbContext : DbContext
+public partial class PharmacyDbContext : IdentityDbContext
 {
     public PharmacyDbContext()
     {
