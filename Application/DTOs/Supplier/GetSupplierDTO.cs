@@ -9,7 +9,7 @@ namespace Application.DTOs.Supplier
         public int Id { get; set; }
 
         [Display(Name = "Name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [Display(Name = "Phone Number")]
         public string? PhoneNumber { get; set; }
