@@ -9,7 +9,7 @@ public partial class Sale
 
     public decimal TotalAmount { get; set; }
 
-    public decimal? Discount { get; set; }
+    public decimal Discount { get; set; }
 
     public decimal AmountReceived { get; set; }
 

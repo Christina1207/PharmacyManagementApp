@@ -107,7 +107,7 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.ToTable("Employee");
 
             entity.HasKey(e => e.InsuredPersonId);
-            entity.Property(e => e.InsuredPersonId).ValueGeneratedOnAdd();
+            entity.Property(e => e.InsuredPersonId).ValueGeneratedNever();
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(20)
                 .IsUnicode(false)
@@ -116,25 +116,24 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.HasOne(d => d.Department).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.DepartmentId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Employee_Department");
 
             entity.HasOne(d => d.InsuredPerson).WithOne(p => p.Employee)
                 .HasForeignKey<Employee>(d => d.InsuredPersonId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Employee_InsuredPerson");
         });
 
         modelBuilder.Entity<FamilyMember>(entity =>
         {
-            entity.HasKey(e => e.InsuredPersonId);
-
+           
             entity.ToTable("FamilyMember");
 
-            entity.HasKey(e => e.InsuredPerson);
+            entity.HasKey(e => e.InsuredPersonId);
 
-            entity.Property(e => e.InsuredPersonId).ValueGeneratedOnAdd();
+            entity.Property(e => e.InsuredPersonId).ValueGeneratedNever();
             entity.Property(e => e.Relationship)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -143,13 +142,13 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.HasOne(d => d.InsuredPerson).WithOne(p => p.FamilyMember)
                 .HasForeignKey<FamilyMember>(d => d.InsuredPersonId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_FamilyMember_InsuredPerson");
 
             entity.HasOne(d => d.Employee).WithMany(p => p.FamilyMembers)
                 .HasForeignKey(d => d.EmployeeId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_FamilyMember_Employee");
         });
 
@@ -184,14 +183,15 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.Property(e => e.Notes)
                 .HasMaxLength(255)
                 .IsUnicode(false)
-                .IsRequired(false);
+                .IsRequired();
                 
-            entity.Property(e => e.TotalValue).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TotalValue).HasColumnType("decimal(18, 2)")
+                .IsRequired();
 
             entity.HasOne(d => d.User).WithMany(p => p.InventoryChecks)
                 .HasForeignKey(d => d.UserId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_InventoryCheck_User");
         });
 
@@ -206,12 +206,13 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
 
                 entity.HasOne(d => d.InventoryCheck).WithMany(p => p.InventoryCheckItems)
                 .HasForeignKey(d => d.InventoryCheckId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_InventoryCheckItem_InventoryCheck");
 
             entity.HasOne(d => d.Medication).WithMany(p => p.InventoryCheckItems)
                 .HasForeignKey(d => d.MedicationId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_InventoryCheckItem_Medication");
         });
 
@@ -224,7 +225,7 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
 
             entity.HasOne(d => d.Medication).WithMany(p => p.InventoryItems)
                 .HasForeignKey(d => d.MedicationId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired()
                 .HasConstraintName("FK_InventoryItem_Medication");
         });
@@ -242,7 +243,7 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.HasOne(d => d.Item).WithMany(p => p.InventoryItemDetails)
                 .HasForeignKey(d => d.ItemId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_InventoryItemDetail_InventoryItem");
         });
 
@@ -283,19 +284,19 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.HasOne(d => d.Class).WithMany(p => p.Medications)
                 .HasForeignKey(d => d.ClassId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Medication_MedicationClass");
 
             entity.HasOne(d => d.Form).WithMany(p => p.Medications)
                 .HasForeignKey(d => d.FormId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Medication_MedicationForm");
 
             entity.HasOne(d => d.Manufacturer).WithMany(p => p.Medications)
                 .HasForeignKey(d => d.ManufacturerId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Medication_Manufacturer");
         });
 
@@ -310,13 +311,13 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.HasOne(d => d.Ingredient).WithMany(p => p.MedicationActiveIngredients)
                 .HasForeignKey(d => d.IngredientId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_MedicationActiveIngredient_ActiveIngredient");
 
             entity.HasOne(d => d.Medication).WithMany(p => p.MedicationActiveIngredients)
                 .HasForeignKey(d => d.MedicationId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_MedicationActiveIngredient_Medication");
         });
 
@@ -360,13 +361,13 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.HasOne(d => d.Supplier).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.SupplierId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Order_Supplier");
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Order_User");
         });
 
@@ -388,12 +389,13 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.HasOne(d => d.Medication).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.MedicationId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_OrderItem_Medication");
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.OrderId)
                 .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_OrderItem_Order");
         });
 
@@ -415,25 +417,25 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.HasOne(d => d.Diagnosis).WithMany(p => p.Prescriptions)
                 .HasForeignKey(d => d.DiagnosisId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Prescription_Diagnosis");
 
             entity.HasOne(d => d.Doctor).WithMany(p => p.Prescriptions)
                 .HasForeignKey(d => d.DoctorId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Prescription_Doctor");
 
             entity.HasOne(d => d.Patient).WithMany(p => p.Prescriptions)
                 .HasForeignKey(d => d.PatientId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Prescription_InsuredPerson");
 
             entity.HasOne(d => d.User).WithMany(p => p.Prescriptions)
                 .HasForeignKey(d => d.UserId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Prescription_User");
         });
 
@@ -449,19 +451,14 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.HasOne(d => d.Medication).WithMany(p => p.PrescriptionItems)
                 .HasForeignKey(d => d.MedicationId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_PrescriptionItem_Medication");
 
             entity.HasOne(d => d.Prescription).WithMany(p => p.PrescriptionItems)
                 .IsRequired()
                 .HasForeignKey(d => d.PrescriptionId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_PrescriptionItem_Prescription");
-        });
-
-        modelBuilder.Entity<Role>(entity =>
-        {
-            entity.ToTable("Role");
-
         });
 
         modelBuilder.Entity<Sale>(entity =>
@@ -478,13 +475,13 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.HasOne(d => d.Prescription).WithMany(p => p.Sales)
                 .HasForeignKey(d => d.PrescriptionId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Sale_Prescription");
 
             entity.HasOne(d => d.User).WithMany(p => p.Sales)
                 .HasForeignKey(d => d.UserId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Sale_User");
         });
 
@@ -497,26 +494,26 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.PhoneNumber)
-                .IsRequired()
+                .IsRequired(false)
                 .HasMaxLength(20)
                 .IsUnicode(false);
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.ToTable("User");
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.FirstName)
-                .HasMaxLength(50)
                 .IsRequired()
+                .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.LastName)
-                .HasMaxLength(50)
                 .IsRequired()
+                .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).IsRequired().HasColumnType("datetime");
+            entity.Property(e => e.IsActive).IsRequired();
 
-           
+
         });
 
         modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("UserClaims");
