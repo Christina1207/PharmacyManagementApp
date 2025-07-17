@@ -2,7 +2,7 @@
 using AutoMapper;
 using Domain.Entities;
 
-namespace Application.Mapping_profiles
+namespace Application.MappingProfiles
 {
     public class DiagnosisProfile:Profile
     {

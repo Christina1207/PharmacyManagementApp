@@ -1,4 +1,5 @@
 ﻿using Domain.IRepositories;
+using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -6,10 +7,10 @@ namespace Infrastructure.Repositories
 {
     public class Repository<T, TKey> : IRepository<T, TKey> where T : class
     {
-        protected readonly DbContext _context;
+        protected readonly PharmacyDbContext _context;
         protected readonly DbSet<T> _dbSet;
 
-        public Repository(DbContext context)
+        public Repository(PharmacyDbContext context)
         {
             _context = context;
             _dbSet = context.Set<T>();
