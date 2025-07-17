@@ -1,12 +1,14 @@
+using Application.IServices.ActiveIngredient;
 using Application.IServices.Department;
+using Application.IServices.Diagnosis;
 using Application.IServices.Doctor;
+using Application.IServices.Supplier;
 using Application.MappingProfiles;
 using Application.Services;
 using Domain.IRepositories;
 using Infrastructure.Context;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,13 +23,20 @@ builder.Services.AddDbContext<PharmacyDbContext>(options => options.UseSqlServer
 
 builder.Services.AddAutoMapper(
     typeof(DepartmentProfile),
-    typeof(DoctorProfile)
+    typeof(DoctorProfile),
+    typeof(ActiveIngredientProfile),
+    typeof(SupplierProfile),
+    typeof(DiagnosisProfile)
+    
 
     );
 
 // Registering all the services
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IActiveIngredientService, ActiveIngredientService>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
+builder.Services.AddScoped<IDiagnosisService, DiagnosisService>();
 
 // Registering the Repository
 builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));

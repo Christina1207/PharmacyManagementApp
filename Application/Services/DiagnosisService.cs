@@ -65,8 +65,8 @@ namespace Application.Services
                 }
                 if (diagnosis.Prescriptions is not null && diagnosis.Prescriptions.Count != 0)
                 {
-                    _logger.LogWarning("Can't delete Diagnosis with ID: {DiagnosisId} This Diagnosis is a foriegn key in Employees.", id);
-                    throw new DbUpdateException($"Diagnosis with ID '{id}' is used by an employee or more.");
+                    _logger.LogWarning("Can't delete Diagnosis with ID: {DiagnosisId} This Diagnosis is a foriegn key in Prescription.", id);
+                    throw new DbUpdateException($"Diagnosis with ID '{id}' is used by an prescription or more.");
                 }
                 _diagnosisRepository.Delete(diagnosis);
                 await _diagnosisRepository.SaveAsync();
