@@ -2,6 +2,7 @@ using Application.IServices.ActiveIngredient;
 using Application.IServices.Department;
 using Application.IServices.Diagnosis;
 using Application.IServices.Doctor;
+using Application.IServices.MedicationForm;
 using Application.IServices.Supplier;
 using Application.MappingProfiles;
 using Application.Services;
@@ -26,7 +27,8 @@ builder.Services.AddAutoMapper(
     typeof(DoctorProfile),
     typeof(ActiveIngredientProfile),
     typeof(SupplierProfile),
-    typeof(DiagnosisProfile)
+    typeof(DiagnosisProfile),
+    typeof(MedicationFormProfile)
     
 
     );
@@ -37,6 +39,7 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IActiveIngredientService, ActiveIngredientService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IDiagnosisService, DiagnosisService>();
+builder.Services.AddScoped<IMedicationFormService, MedicationFormService>();
 
 // Registering the Repository
 builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));

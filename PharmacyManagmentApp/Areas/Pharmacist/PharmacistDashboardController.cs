@@ -1,12 +1,11 @@
-﻿
-
-using Application.DTOs.ActiveIngredient;
+﻿using Application.DTOs.ActiveIngredient;
 using Application.DTOs.Diagnosis;
+using Application.DTOs.MedicationForm;
 using Application.DTOs.Supplier;
 using Application.IServices.ActiveIngredient;
 using Application.IServices.Diagnosis;
+using Application.IServices.MedicationForm;
 using Application.IServices.Supplier;
-using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,11 +18,16 @@ namespace PharmacyManagmentApp.Areas.Pharmacist
         private readonly ISupplierService _supplierService;
         private readonly IDiagnosisService _diagnosisService;
         private readonly IActiveIngredientService _activeIngredientService;
-        public PharmacistDashboardController(ISupplierService supplierService, IDiagnosisService diagnosisService, IActiveIngredientService activeIngredientService)
+        private readonly IMedicationFormService _medicationFormService;
+        public PharmacistDashboardController(ISupplierService supplierService, 
+            IDiagnosisService diagnosisService,
+            IActiveIngredientService activeIngredientService,
+            IMedicationFormService medicationFormService)
         {
             _supplierService = supplierService;
             _diagnosisService = diagnosisService;
             _activeIngredientService = activeIngredientService;
+            _medicationFormService = medicationFormService;
         }
         
         [HttpGet] // No route parameter
@@ -54,7 +58,7 @@ namespace PharmacyManagmentApp.Areas.Pharmacist
             }
         }
 
-        [HttpGet("Suppliers/{id}")]
+        [HttpGet("Supplier/{id}")]
         public async Task<IActionResult> GetSupplierById(int id)
         {
             try
@@ -73,7 +77,7 @@ namespace PharmacyManagmentApp.Areas.Pharmacist
             }
         }
 
-        [HttpPost("Suppliers")]
+        [HttpPost("Supplier")]
         public async Task<IActionResult> CreateSupplier([FromBody] CreateSupplierDTO dto)
         {
             if (!ModelState.IsValid)
@@ -102,7 +106,7 @@ namespace PharmacyManagmentApp.Areas.Pharmacist
 
         }
 
-        [HttpPut("Suppliers/{id}")]
+        [HttpPut("Supplier/{id}")]
         public async Task<IActionResult> UpdateSupplier(int id, [FromBody] UpdateSupplierDTO dto)
         {
             if (!ModelState.IsValid)
@@ -140,7 +144,7 @@ namespace PharmacyManagmentApp.Areas.Pharmacist
             }
         }
 
-        [HttpDelete("Suppliers/{id}")]
+        [HttpDelete("Supplier/{id}")]
         public async Task<IActionResult> DeleteSupplier(int id)
         {
             if (!ModelState.IsValid)
@@ -469,6 +473,151 @@ namespace PharmacyManagmentApp.Areas.Pharmacist
             }
         }
 
+
+        //* MedicationForm *//
+
+        [HttpGet("MedicationForms")]
+        public async Task<IActionResult> GetMedicationForms()
+        {
+
+            try
+            {
+                var result = await _medicationFormService.GetAllMedicationFormsAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = "Failed to retrieve medication forms",
+                    Details = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("MedicationForm/{id}")]
+        public async Task<IActionResult> GetMedicationFormById(int id)
+        {
+            try
+            {
+                var sup = await _medicationFormService.GetMedicationFormByIdAsync(id);
+                if (sup == null) return NotFound(new { Error = $"Medication Form with ID {id} not found" });
+                return Ok(sup);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = $"An error occurred while retrieving medication form with ID {id}",
+                    Details = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("MedicationForm")]
+        public async Task<IActionResult> CreateMedicationForm([FromBody] CreateMedicationFormDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Error = "Validation failed",
+                    Details = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                });
+            }
+            try
+            {
+                var newForm = await _medicationFormService.CreateMedicationFormAsync(dto);
+                return CreatedAtAction(nameof(GetMedicationFormById), new { id = newForm.Id }, newForm);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = "Failed to create medicationform",
+                    Details = ex.Message
+                });
+            }
+
+        }
+
+        [HttpPut("MedicationForms/{id}")]
+        public async Task<IActionResult> UpdateMedicationForm(int id, [FromBody] UpdateMedicationFormDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Error = "Validation failed",
+                    Details = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                });
+            }
+            try
+            {
+                await _medicationFormService.UpdateMedicationFormAsync(dto);
+                return Ok(dto);
+            }
+            catch (KeyNotFoundException e)
+            {
+                return NotFound(new { Error = e.Message });
+
+            }
+            catch (DbUpdateException e)
+            {
+                return Conflict(new { Error = e.Message });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = $"An error occurred while updating medication form with ID {id}",
+                    Details = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("MedicationForm/{id}")]
+        public async Task<IActionResult> DeleteMedicationForm(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Error = "Validation failed",
+                    Details = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                });
+            }
+            try
+            {
+                await _medicationFormService.DeleteMedicationFormAsync(id);
+                return Ok($"Deleted medication form with id {id}");
+            }
+            catch (KeyNotFoundException e)
+            {
+                return NotFound(new { Error = e.Message });
+
+            }
+            catch (DbUpdateException e)
+            {
+                return Conflict(new { Error = e.Message });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = $"An error occurred while Deleting Medication Form with ID {id}",
+                    Details = ex.Message
+                });
+            }
+        }
 
 
 

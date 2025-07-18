@@ -8,7 +8,6 @@ namespace Application.MappingProfiles
     {
         public DoctorProfile()
         {
-
             CreateMap<Doctor, GetDoctorDTO>();
             CreateMap<CreateDoctorDTO, Doctor>();
             CreateMap<UpdateDoctorDTO, Doctor>();
