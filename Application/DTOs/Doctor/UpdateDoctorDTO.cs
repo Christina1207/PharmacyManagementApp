@@ -15,10 +15,12 @@ namespace Application.DTOs.Doctor
         public int Id { get; set; }
 
         [Required(ErrorMessage = "First Name cannot be empty")]
+        [StringLength(50, ErrorMessage = "First Name cannot exceed 50 characters.")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; } = null!;
 
         [Required(ErrorMessage = "Last Name cannot be empty")]
+        [StringLength(50, ErrorMessage = "Last Name cannot exceed 50 characters.")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; } = null!;
 
@@ -27,6 +29,7 @@ namespace Application.DTOs.Doctor
         public string? PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Speciality cannot be empty")]
+        [StringLength(50, ErrorMessage = "Speciality cannot exceed 50 characters.")]
         [Display(Name = "Speciality")]
         public string Speciality { get; set; } = null!;
     }
