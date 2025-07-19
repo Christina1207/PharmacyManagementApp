@@ -9,6 +9,7 @@ namespace Application.DTOs.Supplier
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Name cannot be empty")]
+        [StringLength(100, ErrorMessage = "Supplier Name cannot exceed 100 characters.")]
         [Display(Name = "Name")]
         public string Name { get; set; } = null!;
 
