@@ -1,5 +1,5 @@
 ﻿using Application.DTOs.Auth;
-using Application.IServices;
+using Application.IServices.Auth;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -100,7 +100,10 @@ namespace Application.Services
             return IdentityResult.Success;
         }
 
-
+        public async Task LogoutAsync()
+        {
+            await Task.CompletedTask;
+        }
 
     }
 }

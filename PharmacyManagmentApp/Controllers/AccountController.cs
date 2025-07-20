@@ -1,5 +1,5 @@
 ﻿using Application.DTOs.Auth;
-using Application.IServices;
+using Application.IServices.Auth;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -95,9 +95,16 @@ namespace PharmacyManagmentApp.Controllers
 
             return Ok(new { Status = "Success", Message = "Assistant registered successfully!" });
         }
+
+
+        [HttpPost("logout")]
+        [Authorize] //A user must be logged in to log out
+        public async Task<IActionResult> Logout()
+        {
+            await _authService.LogoutAsync();
+            return Ok(new { Status = "Success", Message = "Logged out successfully." });
+        }
+
     }
-
-
-
 
 }
