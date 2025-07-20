@@ -6,13 +6,17 @@ using Application.IServices.ActiveIngredient;
 using Application.IServices.Diagnosis;
 using Application.IServices.MedicationForm;
 using Application.IServices.Supplier;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace PharmacyManagmentApp.Areas.Pharmacist
 {
+    [Area("Pharmacist")]
+    [Authorize (Roles ="Pharmacist,Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[area]/[controller]")]
     public class PharmacistDashboardController : ControllerBase
     {
         private readonly ISupplierService _supplierService;

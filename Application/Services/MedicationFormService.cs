@@ -150,7 +150,7 @@ namespace Application.Services
                 _medicationFormRepository.Update(medicationform);
                 await _medicationFormRepository.SaveAsync();
 
-                _logger.LogInformation("MedicationForm '{Name}' '{LastName}' updated successfully.", medicationform.Name);
+                _logger.LogInformation("MedicationForm '{Name}' updated successfully.", medicationform.Name);
             }
             catch (Exception ex)
             {

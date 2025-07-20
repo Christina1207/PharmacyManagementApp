@@ -4,11 +4,15 @@ using Application.IServices.Department;
 using Application.IServices.Doctor;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace PharmacyManagmentApp.Areas.Admin
 {
+    [Area("Admin")]
+    [Authorize(Roles ="Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[area]/[controller]")]
 
     public class AdminDashboardController : ControllerBase
     {
