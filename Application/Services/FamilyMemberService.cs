@@ -4,7 +4,6 @@ using Application.DTOs.InsuredPerson;
 using Application.IServices.Employee;
 using Application.IServices.FamilyMember;
 using Application.IServices.InsuredPerson;
-using Application.IServices.Patient;
 using AutoMapper;
 using Domain.Entities;
 using Domain.IRepositories;

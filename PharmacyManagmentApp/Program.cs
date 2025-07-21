@@ -19,6 +19,9 @@ using Infrastructure.DataSeeders;
 using Microsoft.OpenApi.Models;
 using Application.IServices.Auth;
 using Application.Services.Auth;
+using Application.IServices.Employee;
+using Application.IServices.FamilyMember;
+using Application.IServices.InsuredPerson;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -116,6 +119,14 @@ builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IDiagnosisService, DiagnosisService>();
 builder.Services.AddScoped<IMedicationFormService, MedicationFormService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IFamilyMemberService, FamilyMemberService>();
+builder.Services.AddScoped<IFamilyMemberService, FamilyMemberService>();
+builder.Services.AddScoped<IInsuredPersonService, InsuredPersonService>();
+
+
+
+
 
 // Registering the Repository
 builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
