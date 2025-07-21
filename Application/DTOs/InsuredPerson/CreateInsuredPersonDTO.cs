@@ -17,5 +17,7 @@ namespace Application.DTOs.InsuredPerson
         public DateOnly DateOfBirth { get; set; }
         [Required]
         public string? Status { get; set; }
+        [Required]
+        public bool Type { get; set; } // false=employee , true =family member
     }
 }

@@ -15,7 +15,7 @@ public partial class InsuredPerson
 
     public string Status { get; set; } = null!;
 
-    public bool Type { get; set; }
+    public bool Type { get; set; }  // false = InsuredPerson is an Employee , true= familymember
 
     public virtual Employee? Employee { get; set; }
 

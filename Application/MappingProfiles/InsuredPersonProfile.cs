@@ -12,9 +12,6 @@ namespace Application.MappingProfiles
             CreateMap<InsuredPerson, GetInsuredPersonDTO>();
             CreateMap<CreateInsuredPersonDTO, InsuredPerson>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                            .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
-                            .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
-                            .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
                             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => InsuredPersonStatus.Active))                ;
         }
     }

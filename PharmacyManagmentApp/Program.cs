@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Infrastructure.DataSeeders;
 using Microsoft.OpenApi.Models;
 using Application.IServices.Auth;
+using Application.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 

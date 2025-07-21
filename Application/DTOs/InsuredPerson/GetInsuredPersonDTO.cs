@@ -13,5 +13,7 @@ namespace Application.DTOs.InsuredPerson
         public string? LastName { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public string? Status { get; set; }
+        public bool Type { get; set; }
+    
     }
 }
