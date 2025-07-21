@@ -171,6 +171,8 @@ public partial class PharmacyDbContext : IdentityDbContext<User, Role, int>
             entity.Property(e => e.DateOfBirth)
                 .IsRequired()
                 .HasColumnType("date");
+            entity.Property(e => e.Type)
+                .IsRequired();
 
 
         });
