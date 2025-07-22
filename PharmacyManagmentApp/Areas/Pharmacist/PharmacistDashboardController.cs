@@ -1,9 +1,11 @@
 ﻿using Application.DTOs.ActiveIngredient;
 using Application.DTOs.Diagnosis;
+using Application.DTOs.Manufacturer;
 using Application.DTOs.MedicationForm;
 using Application.DTOs.Supplier;
 using Application.IServices.ActiveIngredient;
 using Application.IServices.Diagnosis;
+using Application.IServices.Manufacturer;
 using Application.IServices.MedicationForm;
 using Application.IServices.Supplier;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -20,18 +22,21 @@ namespace PharmacyManagmentApp.Areas.Pharmacist
     public class PharmacistDashboardController : ControllerBase
     {
         private readonly ISupplierService _supplierService;
+        private readonly IManufacturerService _manufacturerService;
         private readonly IDiagnosisService _diagnosisService;
         private readonly IActiveIngredientService _activeIngredientService;
         private readonly IMedicationFormService _medicationFormService;
         public PharmacistDashboardController(ISupplierService supplierService, 
             IDiagnosisService diagnosisService,
             IActiveIngredientService activeIngredientService,
-            IMedicationFormService medicationFormService)
+            IMedicationFormService medicationFormService,
+            IManufacturerService manufacturerService)
         {
             _supplierService = supplierService;
             _diagnosisService = diagnosisService;
             _activeIngredientService = activeIngredientService;
             _medicationFormService = medicationFormService;
+            _manufacturerService = manufacturerService;
         }
         
         [HttpGet] // No route parameter
@@ -622,6 +627,154 @@ namespace PharmacyManagmentApp.Areas.Pharmacist
                 });
             }
         }
+
+
+
+        //* Manufacturer *//
+
+        [HttpGet("Manufacturers")]
+        public async Task<IActionResult> GetManufacturers()
+        {
+
+            try
+            {
+                var result = await _manufacturerService.GetAllManufacturersAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = "Failed to retrieve manufacturers",
+                    Details = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("Manufacturer/{id}")]
+        public async Task<IActionResult> GetManufacturerById(int id)
+        {
+            try
+            {
+                var sup = await _manufacturerService.GetManufacturerByIdAsync(id);
+                if (sup == null) return NotFound(new { Error = $"Manufacturer with ID {id} not found" });
+                return Ok(sup);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = $"An error occurred while retrieving manufacturer with ID {id}",
+                    Details = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("Manufacturer")]
+        public async Task<IActionResult> CreateManufacturer([FromBody] CreateManufacturerDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Error = "Validation failed",
+                    Details = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                });
+            }
+            try
+            {
+                var newSup = await _manufacturerService.CreateManufacturerAsync(dto);
+                return CreatedAtAction(nameof(GetManufacturerById), new { id = newSup.Id }, newSup);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = "Failed to create manufacturer",
+                    Details = ex.Message
+                });
+            }
+
+        }
+
+        [HttpPut("Manufacturer/{id}")]
+        public async Task<IActionResult> UpdateManufacturer(int id, [FromBody] UpdateManufacturerDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Error = "Validation failed",
+                    Details = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                });
+            }
+            try
+            {
+                await _manufacturerService.UpdateManufacturerAsync(dto);
+                return Ok(dto);
+            }
+            catch (KeyNotFoundException e)
+            {
+                return NotFound(new { Error = e.Message });
+
+            }
+            catch (DbUpdateException e)
+            {
+                return Conflict(new { Error = e.Message });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = $"An error occurred while updating manufacturer with ID {id}",
+                    Details = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("Manufacturer/{id}")]
+        public async Task<IActionResult> DeleteManufacturer(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Error = "Validation failed",
+                    Details = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                });
+            }
+            try
+            {
+                await _manufacturerService.DeleteManufacturerAsync(id);
+                return Ok($"Deleted manufacturer with id {id}");
+            }
+            catch (KeyNotFoundException e)
+            {
+                return NotFound(new { Error = e.Message });
+
+            }
+            catch (DbUpdateException e)
+            {
+                return Conflict(new { Error = e.Message });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = $"An error occurred while Deleting Manufacturer with ID {id}",
+                    Details = ex.Message
+                });
+            }
+        }
+
 
 
 
