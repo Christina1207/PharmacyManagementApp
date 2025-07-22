@@ -108,12 +108,8 @@ builder.Services.AddAutoMapper(
     typeof(ActiveIngredientProfile),
     typeof(SupplierProfile),
     typeof(DiagnosisProfile),
-    typeof(MedicationFormProfile),
-    typeof(EmployeeProfile),
-    typeof(FamilyMemberProfile),
-    typeof(InsuredPersonProfile),
-    typeof(ManufacturerProfile),
-    typeof(MedicaionClassProfile)
+    typeof(MedicationFormProfile)
+    
     
     
 
@@ -128,7 +124,6 @@ builder.Services.AddScoped<IDiagnosisService, DiagnosisService>();
 builder.Services.AddScoped<IMedicationFormService, MedicationFormService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IFamilyMemberService, FamilyMemberService>();
 builder.Services.AddScoped<IFamilyMemberService, FamilyMemberService>();
 builder.Services.AddScoped<IInsuredPersonService, InsuredPersonService>();
 builder.Services.AddScoped<IManufacturerService, ManufacturerService>();

@@ -9,10 +9,10 @@ namespace Application.MappingProfiles
     {
         public InsuredPersonProfile()
         {
-            CreateMap<InsuredPerson, GetInsuredPersonDTO>();
+            CreateMap<InsuredPerson, GetInsuredPersonDTO>().ReverseMap();
             CreateMap<CreateInsuredPersonDTO, InsuredPerson>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => InsuredPersonStatus.Active))                ;
+                            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => InsuredPersonStatus.Active));
         }
     }
 }

@@ -74,7 +74,11 @@ namespace Application.Services
         public async Task<GetEmployeeDTO> GetEmployeeByIdAsync(int id)
         {
             var employee = await _employeeRepository.GetByIdAsync(id)
-                   ?? throw new Exception($"Car Booking {id} was not found");
+                   ?? throw new Exception($"employee {id} was not found");
+            if (employee is not null)
+                employee.InsuredPerson = _mapper.Map<InsuredPerson>(await _insuredPersonService.GetInsuredPersonByIdAsync(employee.InsuredPersonId));
+
+
             return _mapper.Map<GetEmployeeDTO>(employee);
         }
     }

@@ -72,6 +72,11 @@ namespace Application.Services
             }
 
             var familyMembers = await _familyMemberRepository.GetAllByPredicateAsync(fm => fm.EmployeeId == employeeId);
+            if (familyMembers is not null)
+                foreach (var fam in familyMembers)
+                {
+                    fam.InsuredPerson = _mapper.Map<InsuredPerson>(await _insuredPersonService.GetInsuredPersonByIdAsync(fam.InsuredPersonId));
+                }
             return _mapper.Map<IEnumerable<GetFamilyMemberDTO>>(familyMembers);
         }
     }

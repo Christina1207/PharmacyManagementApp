@@ -140,7 +140,7 @@ namespace Application.Services
                 }
 
                 // check for uniquness
-                var sameDoctor = await _doctorRepository.GetByPredicateAsync(d => (dto.FirstName!.Equals(d.FirstName) && dto.Speciality!.Equals(d.Speciality) && dto.Speciality!.Equals(d.Speciality)));
+                var sameDoctor = await _doctorRepository.GetByPredicateAsync(d => (dto.FirstName!.Equals(d.FirstName) && dto.Speciality!.Equals(d.Speciality) && dto.Speciality!.Equals(d.Speciality)) && !(dto.Id.Equals(d.Id)));
                 if (sameDoctor is not null)
                 {
                     _logger.LogWarning("Another doctor with same attributes already exists. Update failed for ID: {DoctorId}.", dto.Id);
