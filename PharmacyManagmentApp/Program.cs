@@ -23,6 +23,7 @@ using Application.IServices.Employee;
 using Application.IServices.FamilyMember;
 using Application.IServices.InsuredPerson;
 using Application.IServices.Manufacturer;
+using Application.IServices.MedicationClass;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -111,7 +112,8 @@ builder.Services.AddAutoMapper(
     typeof(EmployeeProfile),
     typeof(FamilyMemberProfile),
     typeof(InsuredPersonProfile),
-    typeof(ManufacturerProfile)
+    typeof(ManufacturerProfile),
+    typeof(MedicaionClassProfile)
     
     
 
@@ -130,6 +132,7 @@ builder.Services.AddScoped<IFamilyMemberService, FamilyMemberService>();
 builder.Services.AddScoped<IFamilyMemberService, FamilyMemberService>();
 builder.Services.AddScoped<IInsuredPersonService, InsuredPersonService>();
 builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
+builder.Services.AddScoped<IMedicationClassService, MedicationClassService>();
 
 
 

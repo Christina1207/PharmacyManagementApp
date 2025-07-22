@@ -1,11 +1,13 @@
 ﻿using Application.DTOs.ActiveIngredient;
 using Application.DTOs.Diagnosis;
 using Application.DTOs.Manufacturer;
+using Application.DTOs.MedicationClass;
 using Application.DTOs.MedicationForm;
 using Application.DTOs.Supplier;
 using Application.IServices.ActiveIngredient;
 using Application.IServices.Diagnosis;
 using Application.IServices.Manufacturer;
+using Application.IServices.MedicationClass;
 using Application.IServices.MedicationForm;
 using Application.IServices.Supplier;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,17 +28,20 @@ namespace PharmacyManagmentApp.Areas.Pharmacist
         private readonly IDiagnosisService _diagnosisService;
         private readonly IActiveIngredientService _activeIngredientService;
         private readonly IMedicationFormService _medicationFormService;
+        private readonly IMedicationClassService _medicationClassService;
         public PharmacistDashboardController(ISupplierService supplierService, 
             IDiagnosisService diagnosisService,
             IActiveIngredientService activeIngredientService,
             IMedicationFormService medicationFormService,
-            IManufacturerService manufacturerService)
+            IManufacturerService manufacturerService,
+            IMedicationClassService medicationClassService)
         {
             _supplierService = supplierService;
             _diagnosisService = diagnosisService;
             _activeIngredientService = activeIngredientService;
             _medicationFormService = medicationFormService;
             _manufacturerService = manufacturerService;
+            _medicationClassService = medicationClassService;
         }
         
         [HttpGet] // No route parameter
@@ -777,8 +782,150 @@ namespace PharmacyManagmentApp.Areas.Pharmacist
 
 
 
+        //* MedicationClass *//
 
+        [HttpGet("MedicationClasses")]
+        public async Task<IActionResult> GetMedicationClasses()
+        {
 
+            try
+            {
+                var result = await _medicationFormService.GetAllMedicationFormsAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = "Failed to retrieve medication classes",
+                    Details = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("MedicationClass/{id}")]
+        public async Task<IActionResult> GetMedicationClassById(int id)
+        {
+            try
+            {
+                var sup = await _medicationClassService.GetMedicationClassByIdAsync(id);
+                if (sup == null) return NotFound(new { Error = $"Medication Class with ID {id} not found" });
+                return Ok(sup);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = $"An error occurred while retrieving medication class with ID {id}",
+                    Details = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("MedicationClass")]
+        public async Task<IActionResult> CreateMedicationClass([FromBody] CreateMedicationClassDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Error = "Validation failed",
+                    Details = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                });
+            }
+            try
+            {
+                var newClass = await _medicationClassService.CreateMedicationClassAsync(dto);
+                return CreatedAtAction(nameof(GetMedicationClassById), new { id = newClass.Id }, newClass);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = "Failed to create medication class",
+                    Details = ex.Message
+                });
+            }
+
+        }
+
+        [HttpPut("MedicationClasses/{id}")]
+        public async Task<IActionResult> UpdateMedicationClass(int id, [FromBody] UpdateMedicationClassDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Error = "Validation failed",
+                    Details = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                });
+            }
+            try
+            {
+                await _medicationClassService.UpdateMedicationClassAsync(dto);
+                return Ok(dto);
+            }
+            catch (KeyNotFoundException e)
+            {
+                return NotFound(new { Error = e.Message });
+
+            }
+            catch (DbUpdateException e)
+            {
+                return Conflict(new { Error = e.Message });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = $"An error occurred while updating medication class with ID {id}",
+                    Details = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("MedicationClass/{id}")]
+        public async Task<IActionResult> DeleteMedicationClass(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Error = "Validation failed",
+                    Details = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                });
+            }
+            try
+            {
+                await _medicationClassService.DeleteMedicationClassAsync(id);
+                return Ok($"Deleted medication class with id {id}");
+            }
+            catch (KeyNotFoundException e)
+            {
+                return NotFound(new { Error = e.Message });
+
+            }
+            catch (DbUpdateException e)
+            {
+                return Conflict(new { Error = e.Message });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = $"An error occurred while Deleting Medication Class with ID {id}",
+                    Details = ex.Message
+                });
+            }
+        }
 
 
     }
