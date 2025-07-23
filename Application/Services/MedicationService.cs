@@ -1,12 +1,10 @@
-﻿using Application.DTOs.Doctor;
-using Application.DTOs.Medication;
+﻿using Application.DTOs.Medication;
 using Application.IServices.Medication;
 using AutoMapper;
 using Domain.Entities;
 using Domain.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Numerics;
 
 namespace Application.Services
 {
@@ -49,8 +47,8 @@ namespace Application.Services
                 await _medicationRepository.SaveAsync();
 
                 _logger.LogInformation("Successfully created medication with ID: {Id}", medication.Id);
-                //return await GetMedicationByIdAsync(medication.Id);
-                return _mapper.Map<GetMedicationDTO>(medication);
+                return await GetMedicationByIdAsync(medication.Id);
+                //return _mapper.Map<GetMedicationDTO>(medication);
             }
             catch (Exception ex)
             {
@@ -117,7 +115,11 @@ namespace Application.Services
             _logger.LogInformation("Retrieving all medications.");
             try
             {
-                var medications = await _medicationRepository.GetAllAsync();
+                var medications = await _medicationRepository.GetAllAsync(m => m.Manufacturer,
+                m => m.Form,
+                m => m.Class,
+                m => m.MedicationActiveIngredients,
+                m => m.MedicationActiveIngredients);
                 return _mapper.Map<IEnumerable<GetMedicationDTO>>(medications);
             }
             catch(Exception ex)
@@ -132,7 +134,10 @@ namespace Application.Services
             _logger.LogInformation("Retrieving medication by ID: {Id}", id);
             try
             {
-                var medication = await _medicationRepository.GetByIdAsync(id);
+                var medication = await _medicationRepository.GetByIdAsync(id, m => m.Manufacturer,
+        m => m.Form,
+        m => m.Class,
+        m => m.MedicationActiveIngredients);
                 if (medication == null)
                 {
                     _logger.LogWarning("Medication with ID {Id} not found.", id);
