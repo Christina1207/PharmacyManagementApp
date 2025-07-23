@@ -137,8 +137,10 @@ builder.Services.AddScoped<IRepository<MedicationActiveIngredient, int>, Reposit
 
 
 
+
 // Registering the Repository
 builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+builder.Services.AddScoped(typeof(IMedicationRepository), typeof(MedicationRepository));
 
 
 

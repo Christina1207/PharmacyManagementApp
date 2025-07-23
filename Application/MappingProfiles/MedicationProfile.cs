@@ -10,7 +10,11 @@ namespace Application.MappingProfiles
     {
         public MedicationProfile()
         {
-            CreateMap<CreateMedicationDTO, Medication>();
+            CreateMap<CreateMedicationDTO, Medication>()
+             .ForMember(
+                dest => dest.MedicationActiveIngredients, // The destination property on the entity
+                opt => opt.MapFrom(src => src.ActiveIngredients) // The source property on the DTO
+            );
             CreateMap<UpdateMedicationDTO, Medication>() 
              .ForMember(dest => dest.MedicationActiveIngredients, opt => opt.Ignore());
 

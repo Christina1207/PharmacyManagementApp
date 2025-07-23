@@ -10,12 +10,12 @@ namespace Application.Services
 {
     public class MedicationService:IMedicationService
     {
-        private readonly IRepository<Medication, int> _medicationRepository;
+        private readonly IMedicationRepository _medicationRepository;
         private readonly IRepository<MedicationActiveIngredient, int> _medicationIngredientRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<MedicationService> _logger;
 
-        public MedicationService(IRepository<Medication, int> medicationRepository, IMapper mapper, ILogger<MedicationService> logger, IRepository<MedicationActiveIngredient, int> medicationIngredientRepository)
+        public MedicationService(IMedicationRepository medicationRepository, IMapper mapper, ILogger<MedicationService> logger, IRepository<MedicationActiveIngredient, int> medicationIngredientRepository)
         {
             _medicationRepository = medicationRepository;
             _mapper = mapper;
@@ -115,11 +115,8 @@ namespace Application.Services
             _logger.LogInformation("Retrieving all medications.");
             try
             {
-                var medications = await _medicationRepository.GetAllAsync(m => m.Manufacturer,
-                m => m.Form,
-                m => m.Class,
-                m => m.MedicationActiveIngredients,
-                m => m.MedicationActiveIngredients);
+                var medications = await _medicationRepository.GetAllWithDetailsAsync();
+              
                 return _mapper.Map<IEnumerable<GetMedicationDTO>>(medications);
             }
             catch(Exception ex)
@@ -134,10 +131,7 @@ namespace Application.Services
             _logger.LogInformation("Retrieving medication by ID: {Id}", id);
             try
             {
-                var medication = await _medicationRepository.GetByIdAsync(id, m => m.Manufacturer,
-        m => m.Form,
-        m => m.Class,
-        m => m.MedicationActiveIngredients);
+                var medication = await _medicationRepository.GetByIdWithDetailsAsync(id);
                 if (medication == null)
                 {
                     _logger.LogWarning("Medication with ID {Id} not found.", id);
