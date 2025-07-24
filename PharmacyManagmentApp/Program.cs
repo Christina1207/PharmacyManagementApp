@@ -25,6 +25,7 @@ using Application.IServices.InsuredPerson;
 using Application.IServices.Manufacturer;
 using Application.IServices.MedicationClass;
 using Application.IServices.Medication;
+using Application.IServices.IInventoryService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -113,7 +114,8 @@ builder.Services.AddAutoMapper(
     typeof(MedicationProfile),
     typeof(EmployeeProfile),
     typeof(InsuredPersonProfile),
-    typeof(FamilyMemberProfile)    
+    typeof(FamilyMemberProfile),
+    typeof(InventoryProfile)
 
     );
 
@@ -132,6 +134,7 @@ builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
 builder.Services.AddScoped<IMedicationClassService, MedicationClassService>();
 builder.Services.AddScoped<IMedicationService, MedicationService>();
 builder.Services.AddScoped<IRepository<MedicationActiveIngredient, int>, Repository<MedicationActiveIngredient, int>>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
 
 
 
