@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace Domain.IUnitOfWork
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork:IDisposable
     {
         IRepository<Prescription, int> Prescriptions { get; }
+        IRepository<InventoryItem, int> InventoryItems { get; }
         IRepository<InventoryItemDetail, int> InventoryItemDetails { get; }
         IRepository<Sale, int> Sales { get; }
 
