@@ -106,5 +106,22 @@ namespace Application.Services
             var finalSale = await _unitOfWork.Sales.GetByIdAsync(sale.Id, s=>s.User);
             return _mapper.Map<GetSaleDTO>(finalSale);
         }
+
+        public async Task<GetPrescriptionDTO>GetPrescriptionByIdAsync(int id)
+        {
+            _logger.LogInformation("Retrieving prescription by ID: {Id}", id);
+            var prescription = await _unitOfWork.Prescriptions.GetByIdAsync(id);
+            if (prescription == null)
+            {
+                throw new KeyNotFoundException($"Prescription with ID {id} not found.");
+            }
+            return _mapper.Map<GetPrescriptionDTO>(prescription);
+        }
+        public async Task<IEnumerable<GetPrescriptionDTO>> GetAllPrescriptionsAsync()
+        {
+            _logger.LogInformation("Retrieving all prescriptions.");
+            var prescriptions = await _unitOfWork.Prescriptions.GetAllAsync(p=>p.Patient, p=>p.Doctor, p=>p.User, p=>p.PrescriptionItems);
+            return _mapper.Map<IEnumerable<GetPrescriptionDTO>>(prescriptions);
+        }
     }
 }

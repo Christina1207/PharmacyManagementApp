@@ -45,5 +45,25 @@ namespace PharmacyManagmentApp.Controllers
                 return StatusCode(500, new { Message = "An unexpected error occurred while processing the prescription.", Details = ex.Message });
             }
         }
+
+        [HttpGet("prescriptions")]
+        public async Task<IActionResult> GetAllPrescriptions()
+        {
+            var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
+            return Ok(prescriptions);
+        }
+        [HttpGet("prescriptions/{id}")]
+        public async Task<IActionResult> GetPrescriptionById(int id)
+        {
+            try
+            {
+                var prescription = await _prescriptionService.GetPrescriptionByIdAsync(id);
+                return Ok(prescription);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
     }
 }
