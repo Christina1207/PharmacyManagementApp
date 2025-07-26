@@ -13,7 +13,10 @@ namespace Application.MappingProfiles
     {
         public PrescriptionProfile()
         {
-            CreateMap<CreatePrescriptionDTO, Prescription>();
+            CreateMap<CreatePrescriptionDTO, Prescription>().ForMember(
+                 dest => dest.PrescriptionItems,
+                 opt => opt.Ignore()
+                  );
             CreateMap<PrescriptionItemDTO, PrescriptionItem>();
         }
 

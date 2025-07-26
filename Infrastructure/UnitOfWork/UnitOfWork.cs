@@ -12,6 +12,7 @@ namespace Infrastructure.UnitOfWork
         public IRepository<Prescription, int> Prescriptions { get; private set; }
         public IRepository<InventoryItem, int> InventoryItems { get; private set; }
         public IRepository<InventoryItemDetail, int> InventoryItemDetails { get; private set; }
+        public IRepository<InsuredPerson, int> InsuredPersons { get; private set; }
         public IRepository<Sale, int> Sales { get; private set; }
 
         public UnitOfWork(PharmacyDbContext context)
@@ -20,6 +21,7 @@ namespace Infrastructure.UnitOfWork
             Prescriptions = new Repository<Prescription, int>(_context);
             InventoryItems = new Repository<InventoryItem, int>(_context);
             InventoryItemDetails = new Repository<InventoryItemDetail, int>(_context);
+            InsuredPersons = new Repository<InsuredPerson, int>(_context);
             Sales = new Repository<Sale, int>(_context);
         }
 

@@ -1,10 +1,12 @@
 ﻿using Application.DTOs.Prescription;
 using Application.DTOs.Sale;
 using Application.IServices.Prescription;
+using Application.Utilities;
 using AutoMapper;
 using Domain.Entities;
 using Domain.IUnitOfWork;
 using Microsoft.Extensions.Logging;
+using System.Formats.Tar;
 
 
 namespace Application.Services
@@ -25,6 +27,12 @@ namespace Application.Services
         public async Task<GetSaleDTO> ProcessPrescriptionAsync(CreatePrescriptionDTO dto)
         {
             _logger.LogInformation("Starting to process prescription for Patient ID: {PatientId}", dto.PatientId);
+
+            var patient = await _unitOfWork.InsuredPersons.GetByIdAsync(dto.PatientId);
+            if(patient == null)
+            {
+                throw new KeyNotFoundException("$Patient with ID {dto.PatientId} not found");
+            }
 
             var prescription = _mapper.Map<Prescription>(dto);
             prescription.DispenseDate = DateTime.UtcNow;
@@ -79,15 +87,15 @@ namespace Application.Services
             prescription.TotalValue = totalValue;
             await _unitOfWork.Prescriptions.AddAsync(prescription);
 
-            prescription.TotalValue = totalValue;
-            await _unitOfWork.Prescriptions.AddAsync(prescription);
+
+            decimal patientShare = PatientShareCalculator.Calculate(patient.Type, totalValue);
 
             var sale = new Sale
             {
                 Prescription = prescription,
                 TotalAmount = totalValue,
-                Discount = 0, // Add discount Logic
-                AmountReceived = totalValue,
+                Discount = totalValue - patientShare,
+                AmountReceived = patientShare,
                 UserId = dto.UserId
             };
             await _unitOfWork.Sales.AddAsync(sale);
@@ -95,7 +103,7 @@ namespace Application.Services
             await _unitOfWork.SaveChangesAsync();
 
             _logger.LogInformation("Successfully processed prescription ID: {PrescriptionId} and created Sale ID: {SaleId}", prescription.Id, sale.Id);
-            var finalSale = await _unitOfWork.Sales.GetByIdAsync(sale.Id);
+            var finalSale = await _unitOfWork.Sales.GetByIdAsync(sale.Id, s=>s.User);
             return _mapper.Map<GetSaleDTO>(finalSale);
         }
     }
