@@ -60,7 +60,13 @@ namespace Application.Services.Auth
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
-                Username = user.UserName
+                User = new UserInfoDTO
+                {
+                    Username = user.UserName,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Role = userRoles.FirstOrDefault() 
+                }
             };
         }
 
