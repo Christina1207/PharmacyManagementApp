@@ -88,14 +88,14 @@ namespace Application.Services
         public async Task<IEnumerable<GetInventoryItemDTO>> GetAllInventoryItemsAsync()
         {
             _logger.LogInformation("Retrieving all inventory items.");
-            var items = await _inventoryItemRepository.GetAllAsync(i=>i.Medication,i=>i.InventoryItemDetails);
+            var items = await _inventoryItemRepository.GetAllAsync(i=>i.Medication.Manufacturer,i=>i.InventoryItemDetails);
             return _mapper.Map<IEnumerable<GetInventoryItemDTO>>(items);
         }
 
         public async Task<GetInventoryItemDTO> GetInventoryItemByMedicationIdAsync(int medicationId)
         {
             _logger.LogInformation("Retrieving inventory for Medication ID: {MedicationId}", medicationId);
-            var item = await _inventoryItemRepository.GetByPredicateAsync(i => i.MedicationId == medicationId,i=>i.Medication,i => i.InventoryItemDetails);
+            var item = await _inventoryItemRepository.GetByPredicateAsync(i => i.MedicationId == medicationId,i=>i.Medication.Manufacturer,i => i.InventoryItemDetails);
             if (item == null)
             {
                 _logger.LogWarning("Inventory item not found for Medication ID: {MedicationId}", medicationId);
