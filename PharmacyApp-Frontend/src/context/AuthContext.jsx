@@ -1,69 +1,56 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { login as apiLogin, logout as apiLogout } from '../api/mockApi.js';
+import authService from '../services/authService'; // Use the updated service
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  return useContext(AuthContext);
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // Will store the full AuthResponse object
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user on app load
-    const storedUser = localStorage.getItem('pharmacy_user');
+    const storedUser = authService.getCurrentUser();
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      setUser(storedUser);
     }
     setLoading(false);
   }, []);
 
   const login = async (username, password) => {
     try {
-      const response = await apiLogin(username, password);
-      const userData = response.user;
-      
-      setUser(userData);
-      localStorage.setItem('pharmacy_user', JSON.stringify(userData));
-      
-      return { success: true };
+      const response = await authService.login(username, password);
+      setUser(response);
+      return response; // Return the full response
     } catch (error) {
+      // Axios wraps the error, let's re-throw the important part
+      if (error.response && error.response.data) {
+        throw new Error(error.response.data.Message || 'Login failed');
+      }
       throw error;
     }
   };
 
-  const logout = async () => {
-    try {
-      await apiLogout();
-      setUser(null);
-      localStorage.removeItem('pharmacy_user');
-      return { success: true };
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Force logout even if API fails
-      setUser(null);
-      localStorage.removeItem('pharmacy_user');
-      return { success: true };
-    }
+  const logout = () => {
+    authService.logout();
+    setUser(null);
   };
 
   const value = {
-    user,
-    login,
+    // Note the change here to provide user info and role directly
+    user: user?.user,
+    token: user?.token,
+    isAuthenticated: !!user?.token,
     logout,
+    login,
     loading,
-    isAuthenticated: !!user
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

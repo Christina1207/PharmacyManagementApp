@@ -1,41 +1,53 @@
 import axios from 'axios';
 
-// Define the structure of the user object we get from the API
-interface UserAuthData {
-    token: string;
-    expiration: string;
-    username: string;
+// This interface should match your backend's AuthResponseDTO and UserInfoDTO
+interface UserInfo {
+  username: string;
+  firstName: string;
+  lastName: string;
+  role: string;
 }
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}/account`;
+export interface AuthResponse {
+  token: string;
+  expiration: string;
+  user: UserInfo;
+}
 
-const login = async (username: string, password: string): Promise<UserAuthData> => {
-    const response = await axios.post<UserAuthData>(API_URL + '/login', {
-        username,
-        password,
-    });
-    if (response.data.token) {
-        localStorage.setItem('user', JSON.stringify(response.data));
-    }
-    return response.data;
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/account`;
+//const API_URL = `https://localhost:7144/api/account`;
+
+const login = async (username: string, password: string): Promise<AuthResponse> => {
+  const response = await axios.post<AuthResponse>(`${API_URL}/login`, {
+    username,
+    password,
+  });
+
+  if (response.data.token) {
+    // Store the entire auth response in local storage
+    localStorage.setItem('pharmacy_user', JSON.stringify(response.data));
+  }
+
+  return response.data;
 };
 
 const logout = (): void => {
-    localStorage.removeItem('user');
+  // No API call is strictly necessary for JWT logout, just remove the token
+  localStorage.removeItem('pharmacy_user');
 };
 
-const getCurrentUser = (): UserAuthData | null => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-        return JSON.parse(userStr) as UserAuthData;
-    }
-    return null;
+const getCurrentUser = (): AuthResponse | null => {
+  const userStr = localStorage.getItem('pharmacy_user');
+  if (userStr) {
+    return JSON.parse(userStr) as AuthResponse;
+  }
+  return null;
 };
 
 const authService = {
-    login,
-    logout,
-    getCurrentUser,
+  login,
+  logout,
+  getCurrentUser,
 };
 
 export default authService;
