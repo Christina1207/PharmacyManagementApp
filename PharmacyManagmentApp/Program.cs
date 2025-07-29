@@ -29,6 +29,7 @@ using Application.IServices.IInventoryService;
 using Domain.IUnitOfWork;
 using Infrastructure.UnitOfWork;
 using Application.IServices.Prescription;
+using Application.IServices.Order;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -133,12 +134,14 @@ builder.Services.AddAutoMapper(
     typeof(FamilyMemberProfile),
     typeof(InventoryProfile),
     typeof(PrescriptionProfile),
-    typeof(SaleProfile)
+    typeof(SaleProfile),
+    typeof(OrderProfile)
 
     );
 
 // Registering all the services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IActiveIngredientService, ActiveIngredientService>();
@@ -155,7 +158,7 @@ builder.Services.AddScoped<IMedicationService, MedicationService>();
 builder.Services.AddScoped<IRepository<MedicationActiveIngredient, int>, Repository<MedicationActiveIngredient, int>>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
-
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 
 

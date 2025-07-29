@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { Button } from './ui/button';
 import { useToast } from '../hooks/use-toast';
+import { Truck } from 'lucide-react';
 import {
   LayoutDashboard,
   Users,
@@ -48,6 +49,7 @@ const MainLayout = () => {
     { path: '/dispense', label: 'Dispense', icon: FileText, roles: ['Admin', 'Pharmacist'] },
     { path: '/patients', label: 'Patients', icon: Users, roles: ['Admin', 'Pharmacist'] },
     { path: '/medications', label: 'Medications', icon: Pill, roles: ['Admin', 'Pharmacist'] },
+    { path: '/inventory/receive-order', label: 'Receive Order', icon: Truck, roles: ['Admin', 'Pharmacist'] },
     { path: '/inventory', label: 'Inventory', icon: Package, roles: ['Admin', 'Pharmacist'] },
     { path: '/admin/departments', label: 'Departments', icon: Building2, roles: ['Admin'] },
     { path: '/admin/doctors', label: 'Doctors', icon: UserCheck, roles: ['Admin'] },

@@ -15,7 +15,8 @@ namespace Domain.IUnitOfWork
         IRepository<InventoryItemDetail, int> InventoryItemDetails { get; }
         IRepository<InsuredPerson, int> InsuredPersons { get; }
         IRepository<Sale, int> Sales { get; }
-
+        IOrderRepository Orders { get; }
+        IRepository<Medication,int> Medications { get; }
         Task<int> SaveChangesAsync();
     }
 }

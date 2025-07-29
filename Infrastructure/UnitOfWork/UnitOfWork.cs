@@ -14,7 +14,10 @@ namespace Infrastructure.UnitOfWork
         public IRepository<InventoryItemDetail, int> InventoryItemDetails { get; private set; }
         public IRepository<InsuredPerson, int> InsuredPersons { get; private set; }
         public IRepository<Sale, int> Sales { get; private set; }
+        public IRepository<Medication, int> Medications { get; private set; }
 
+        //order
+        public IOrderRepository Orders { get; private set; }
         public UnitOfWork(PharmacyDbContext context)
         {
             _context = context;
@@ -23,6 +26,8 @@ namespace Infrastructure.UnitOfWork
             InventoryItemDetails = new Repository<InventoryItemDetail, int>(_context);
             InsuredPersons = new Repository<InsuredPerson, int>(_context);
             Sales = new Repository<Sale, int>(_context);
+            Orders = new OrderRepository(_context);
+            Medications = new Repository<Medication, int>(_context);
         }
 
         public async Task<int> SaveChangesAsync()

@@ -15,6 +15,7 @@ import InventoryPage from "./pages/InventoryPage.jsx";
 import DepartmentsPage from "./pages/admin/DepartmentsPage.jsx";
 import DoctorsPage from "./pages/admin/DoctorsPage.jsx";
 import UsersPage from "./pages/admin/UsersPage.jsx";
+import ReceiveOrderPage from "./pages/ReceiveOrderPage.jsx";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
                 <MainLayout />
               </PrivateRoute>
             }>
+              <Route path="inventory/receive-order" element={<ReceiveOrderPage />} />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="dispense" element={<DispensePage />} />
               <Route path="patients" element={<PatientsPage />} />
