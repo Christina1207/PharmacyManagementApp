@@ -1,5 +1,8 @@
 ﻿using Application.DTOs.Auth;
+using Application.DTOs.User;
 using Application.IServices.Auth;
+using Application.IServices.User;
+using Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +14,12 @@ namespace PharmacyManagmentApp.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IUserService _userService;
 
-        public AccountController(IAuthService authService)
+        public AccountController(IAuthService authService,IUserService userService)
         {
             _authService = authService;
+            _userService = userService;
         }
 
 
@@ -102,6 +107,79 @@ namespace PharmacyManagmentApp.Controllers
             await _authService.LogoutAsync();
             return Ok(new { Status = "Success", Message = "Logged out successfully." });
         }
+
+        [HttpGet("Users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(users);
+        }
+
+        [HttpGet("‘User/{id}")]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            try
+            {
+                var user = await _userService.GetUserByIdAsync(id);
+                return Ok(user);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
+
+        [HttpPut("User/{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            try
+            {
+                var success = await _userService.UpdateUserAsync(id, dto);
+                if (success) return NoContent();
+                return BadRequest("Failed to update user.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPut("User/{id}/activate")]
+        public async Task<IActionResult> ActivateUser(int id)
+        {
+            try
+            {
+                var success = await _userService.ActivateUserAsync(id);
+                if (success) return NoContent();
+                return BadRequest("Failed to activate user.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
+
+        [HttpPut("User/{id}/deactivate")]
+        public async Task<IActionResult> DeactivateUser(int id)
+        {
+            try
+            {
+                var success = await _userService.DeactivateUserAsync(id);
+                if (success) return NoContent();
+                return BadRequest("Failed to deactivate user.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
+
 
     }
 

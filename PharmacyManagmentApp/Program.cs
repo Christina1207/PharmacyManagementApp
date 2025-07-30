@@ -142,16 +142,16 @@ builder.Services.AddAutoMapper(
     );
 
 // Registering all the services
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-builder.Services.AddScoped<IDoctorService, DoctorService>();
-builder.Services.AddScoped<IActiveIngredientService, ActiveIngredientService>();
-builder.Services.AddScoped<ISupplierService, SupplierService>();
-builder.Services.AddScoped<IDiagnosisService, DiagnosisService>();
-builder.Services.AddScoped<IMedicationFormService, MedicationFormService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>()
+    .AddScoped<IOrderRepository, OrderRepository>()
+    .AddScoped<IDepartmentService, DepartmentService>()
+    .AddScoped<IDoctorService, DoctorService>()
+    .AddScoped<IActiveIngredientService, ActiveIngredientService>()
+    .AddScoped<ISupplierService, SupplierService>()
+    .AddScoped<IDiagnosisService, DiagnosisService>()
+    .AddScoped<IMedicationFormService, MedicationFormService>()
+    .AddScoped<IAuthService, AuthService>()
+    .AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IFamilyMemberService, FamilyMemberService>();
 builder.Services.AddScoped<IInsuredPersonService, InsuredPersonService>();
 builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
