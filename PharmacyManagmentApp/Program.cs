@@ -32,6 +32,7 @@ using Application.IServices.Prescription;
 using Application.IServices.Order;
 using Application.IServices.InventoryCheck;
 using Application.IServices.User;
+using Application.IServices.Sale;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -152,8 +153,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>()
     .AddScoped<IDiagnosisService, DiagnosisService>()
     .AddScoped<IMedicationFormService, MedicationFormService>()
     .AddScoped<IAuthService, AuthService>()
-    .AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IFamilyMemberService, FamilyMemberService>();
+    .AddScoped<IEmployeeService, EmployeeService>()
+    .AddScoped<IFamilyMemberService, FamilyMemberService>();
 builder.Services.AddScoped<IInsuredPersonService, InsuredPersonService>();
 builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
 builder.Services.AddScoped<IMedicationClassService, MedicationClassService>();
@@ -162,7 +163,8 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IInventoryCheckService, InventoryCheckService>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserService, UserService>()
+    .AddScoped<ISaleService, SaleService>();
 
 
 
