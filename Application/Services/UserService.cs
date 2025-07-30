@@ -43,7 +43,7 @@ namespace Application.Services
 
         public async Task<UserDTO> GetUserByIdAsync(int id)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (user == null) throw new KeyNotFoundException($"User with ID {id} not found.");
 
             var roles = await _userManager.GetRolesAsync(user);

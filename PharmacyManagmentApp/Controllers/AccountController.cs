@@ -109,13 +109,15 @@ namespace PharmacyManagmentApp.Controllers
         }
 
         [HttpGet("Users")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
             return Ok(users);
         }
 
-        [HttpGet("‘User/{id}")]
+        [HttpGet("User/{id}")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetUser(int id)
         {
             try
@@ -130,6 +132,7 @@ namespace PharmacyManagmentApp.Controllers
         }
 
         [HttpPut("User/{id}")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -151,6 +154,7 @@ namespace PharmacyManagmentApp.Controllers
         }
 
         [HttpPut("User/{id}/activate")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ActivateUser(int id)
         {
             try
@@ -166,6 +170,7 @@ namespace PharmacyManagmentApp.Controllers
         }
 
         [HttpPut("User/{id}/deactivate")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeactivateUser(int id)
         {
             try

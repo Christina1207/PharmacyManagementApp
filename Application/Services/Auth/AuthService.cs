@@ -32,6 +32,10 @@ namespace Application.Services.Auth
                 // For security, i didn't specify whether the username or password was wrong.
                 throw new UnauthorizedAccessException("Invalid username or password.");
             }
+            if (!user.IsActive)
+            {
+                throw new UnauthorizedAccessException("This account has been deactivated.");
+            }
 
             var userRoles = await _userManager.GetRolesAsync(user);
 

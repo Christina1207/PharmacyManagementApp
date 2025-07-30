@@ -31,6 +31,7 @@ using Infrastructure.UnitOfWork;
 using Application.IServices.Prescription;
 using Application.IServices.Order;
 using Application.IServices.InventoryCheck;
+using Application.IServices.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -161,6 +162,7 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IInventoryCheckService, InventoryCheckService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 
