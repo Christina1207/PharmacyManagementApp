@@ -13,7 +13,7 @@ namespace Infrastructure.UnitOfWork
         public IRepository<InventoryItem, int> InventoryItems { get; private set; }
         public IRepository<InventoryItemDetail, int> InventoryItemDetails { get; private set; }
         public IRepository<InsuredPerson, int> InsuredPersons { get; private set; }
-        public IRepository<Sale, int> Sales { get; private set; }
+        public ISaleRepository Sales { get; private set; }
         public IRepository<Medication, int> Medications { get; private set; }
 
         // order
@@ -28,7 +28,7 @@ namespace Infrastructure.UnitOfWork
             InventoryItems = new Repository<InventoryItem, int>(_context);
             InventoryItemDetails = new Repository<InventoryItemDetail, int>(_context);
             InsuredPersons = new Repository<InsuredPerson, int>(_context);
-            Sales = new Repository<Sale, int>(_context);
+            Sales = new SaleRepository(_context);
             Orders = new OrderRepository(_context);
             Medications = new Repository<Medication, int>(_context);
             InventoryChecks = new InventoryCheckRepository(_context);

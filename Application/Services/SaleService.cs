@@ -31,15 +31,15 @@ namespace Application.Services
             return _mapper.Map<IEnumerable<GetSaleDTO>>(sales);
         }
 
-        public async Task<GetSaleDTO> GetSaleByIdAsync(int id)
+        public async Task<GetSaleDetailsDTO> GetSaleByIdAsync(int id) // Changed return type
         {
-            _logger.LogInformation("Retrieving sale record with ID {SaleId}", id);
-            var sale = await _unitOfWork.Sales.GetByIdAsync(id, s => s.User, s => s.Prescription);
+            _logger.LogInformation("Retrieving detailed sale record with ID {SaleId}", id);
+            var sale = await _unitOfWork.Sales.GetSaleWithDetailsAsync(id); // Use new method
             if (sale == null)
             {
                 throw new KeyNotFoundException($"Sale with ID {id} not found.");
             }
-            return _mapper.Map<GetSaleDTO>(sale);
+            return _mapper.Map<GetSaleDetailsDTO>(sale);
         }
     }
 }

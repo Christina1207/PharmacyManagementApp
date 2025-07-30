@@ -16,6 +16,7 @@ import DepartmentsPage from "./pages/admin/DepartmentsPage.jsx";
 import DoctorsPage from "./pages/admin/DoctorsPage.jsx";
 import UsersPage from "./pages/admin/UsersPage.jsx";
 import ReceiveOrderPage from "./pages/ReceiveOrderPage.jsx";
+import SalesHistoryPage from "./pages/SalesHistoryPage.jsx";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="admin/departments" element={<DepartmentsPage />} />
               <Route path="admin/doctors" element={<DoctorsPage />} />
               <Route path="admin/users" element={<UsersPage />} />
+              <Route path="sales" element={<SalesHistoryPage />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

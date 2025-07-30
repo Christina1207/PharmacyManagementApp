@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { Button } from './ui/button';
 import { useToast } from '../hooks/use-toast';
 import { Truck } from 'lucide-react';
+import { Receipt } from 'lucide-react';
 import {
   LayoutDashboard,
   Users,
@@ -46,7 +47,8 @@ const MainLayout = () => {
 
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['Admin', 'Pharmacist'] },
-    { path: '/dispense', label: 'Dispense', icon: FileText, roles: ['Admin', 'Pharmacist'] },
+   { path: '/dispense', label: 'Dispense', icon: FileText, roles: ['Admin', 'Pharmacist'] },
+    { path: '/sales', label: 'Sales History', icon: Receipt, roles: ['Admin', 'Pharmacist'] },
     { path: '/patients', label: 'Patients', icon: Users, roles: ['Admin', 'Pharmacist'] },
     { path: '/medications', label: 'Medications', icon: Pill, roles: ['Admin', 'Pharmacist'] },
     { path: '/inventory/receive-order', label: 'Receive Order', icon: Truck, roles: ['Admin', 'Pharmacist'] },

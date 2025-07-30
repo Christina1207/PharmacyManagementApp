@@ -33,6 +33,8 @@ using Application.IServices.Order;
 using Application.IServices.InventoryCheck;
 using Application.IServices.User;
 using Application.IServices.Sale;
+using Application.IServices.Reporting;
+using Application.IServices.Inventory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -139,7 +141,8 @@ builder.Services.AddAutoMapper(
     typeof(PrescriptionProfile),
     typeof(SaleProfile),
     typeof(OrderProfile),
-    typeof(InventoryCheckProfile)
+    typeof(InventoryCheckProfile),
+    typeof(SaleProfile)
 
     );
 
@@ -154,17 +157,19 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>()
     .AddScoped<IMedicationFormService, MedicationFormService>()
     .AddScoped<IAuthService, AuthService>()
     .AddScoped<IEmployeeService, EmployeeService>()
-    .AddScoped<IFamilyMemberService, FamilyMemberService>();
-builder.Services.AddScoped<IInsuredPersonService, InsuredPersonService>();
-builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
-builder.Services.AddScoped<IMedicationClassService, MedicationClassService>();
-builder.Services.AddScoped<IMedicationService, MedicationService>();
-builder.Services.AddScoped<IInventoryService, InventoryService>();
-builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IInventoryCheckService, InventoryCheckService>();
-builder.Services.AddScoped<IUserService, UserService>()
-    .AddScoped<ISaleService, SaleService>();
+    .AddScoped<IFamilyMemberService, FamilyMemberService>()
+    .AddScoped<IInsuredPersonService, InsuredPersonService>()
+    .AddScoped<IManufacturerService, ManufacturerService>()
+    .AddScoped<IMedicationClassService, MedicationClassService>()
+    .AddScoped<IMedicationService, MedicationService>()
+    .AddScoped<IInventoryService, InventoryService>()
+    .AddScoped<IPrescriptionService, PrescriptionService>()
+    .AddScoped<IOrderService, OrderService>()
+    .AddScoped<IInventoryCheckService, InventoryCheckService>()
+    .AddScoped<IUserService, UserService>()
+    .AddScoped<ISaleService, SaleService>()
+    .AddScoped<IReportService, ReportService>()
+    .AddScoped<IInventoryReconciliationService, InventoryReconciliationService>();
 
 
 
@@ -175,6 +180,7 @@ builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
 builder.Services.AddScoped(typeof(IMedicationRepository), typeof(MedicationRepository));
 builder.Services.AddScoped<IInventoryCheckRepository, InventoryCheckRepository>();
 builder.Services.AddScoped<IRepository<MedicationActiveIngredient, int>, Repository<MedicationActiveIngredient, int>>();
+builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 
 
 

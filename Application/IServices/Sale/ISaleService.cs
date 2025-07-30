@@ -10,6 +10,6 @@ namespace Application.IServices.Sale
     public interface ISaleService
     {
         Task<IEnumerable<GetSaleDTO>> GetAllSalesAsync();
-        Task<GetSaleDTO> GetSaleByIdAsync(int id);
+        Task<GetSaleDetailsDTO> GetSaleByIdAsync(int id);
     }
 }

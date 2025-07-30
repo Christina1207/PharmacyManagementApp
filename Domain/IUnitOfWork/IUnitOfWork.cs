@@ -10,7 +10,7 @@ namespace Domain.IUnitOfWork
         IRepository<InventoryItem, int> InventoryItems { get; }
         IRepository<InventoryItemDetail, int> InventoryItemDetails { get; }
         IRepository<InsuredPerson, int> InsuredPersons { get; }
-        IRepository<Sale, int> Sales { get; }
+        ISaleRepository Sales { get; }
         IOrderRepository Orders { get; }
         IRepository<Medication,int> Medications { get; }
 
