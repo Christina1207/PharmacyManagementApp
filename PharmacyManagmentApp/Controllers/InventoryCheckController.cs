@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.InventoryCheck;
+using Application.IServices.Inventory;
 using Application.IServices.InventoryCheck;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +14,12 @@ namespace PharmacyManagmentApp.Controllers
     public class InventoryCheckController : ControllerBase
     {
         private readonly IInventoryCheckService _checkService;
+        private readonly IInventoryReconciliationService _reconciliationService;
 
-        public InventoryCheckController(IInventoryCheckService checkService)
+        public InventoryCheckController(IInventoryCheckService checkService, IInventoryReconciliationService reconciliationService)
         {
             _checkService = checkService;
+            _reconciliationService = reconciliationService;
         }
 
         [HttpPost]
@@ -59,5 +62,25 @@ namespace PharmacyManagmentApp.Controllers
             var checks = await _checkService.GetAllChecksAsync();
             return Ok(checks);
         }
+
+        [HttpPost("{id}/reconcile")]
+        [Authorize(Roles = "Admin")] // Only Admins can reconcile
+        public async Task<IActionResult> ReconcileCheck(int id)
+        {
+            try
+            {
+                await _reconciliationService.ReconcileInventoryAsync(id);
+                return Ok(new { Message = $"Inventory Check {id} has been reconciled successfully. Stock levels updated." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An unexpected error occurred during reconciliation.", Details = ex.Message });
+            }
+        }
+
     }
 }
