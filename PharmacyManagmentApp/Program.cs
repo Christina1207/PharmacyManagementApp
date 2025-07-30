@@ -30,6 +30,7 @@ using Domain.IUnitOfWork;
 using Infrastructure.UnitOfWork;
 using Application.IServices.Prescription;
 using Application.IServices.Order;
+using Application.IServices.InventoryCheck;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -135,7 +136,8 @@ builder.Services.AddAutoMapper(
     typeof(InventoryProfile),
     typeof(PrescriptionProfile),
     typeof(SaleProfile),
-    typeof(OrderProfile)
+    typeof(OrderProfile),
+    typeof(InventoryCheckProfile)
 
     );
 
@@ -155,10 +157,10 @@ builder.Services.AddScoped<IInsuredPersonService, InsuredPersonService>();
 builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
 builder.Services.AddScoped<IMedicationClassService, MedicationClassService>();
 builder.Services.AddScoped<IMedicationService, MedicationService>();
-builder.Services.AddScoped<IRepository<MedicationActiveIngredient, int>, Repository<MedicationActiveIngredient, int>>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IInventoryCheckService, InventoryCheckService>();
 
 
 
@@ -167,6 +169,8 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 // Registering the Repository
 builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
 builder.Services.AddScoped(typeof(IMedicationRepository), typeof(MedicationRepository));
+builder.Services.AddScoped<IInventoryCheckRepository, InventoryCheckRepository>();
+builder.Services.AddScoped<IRepository<MedicationActiveIngredient, int>, Repository<MedicationActiveIngredient, int>>();
 
 
 

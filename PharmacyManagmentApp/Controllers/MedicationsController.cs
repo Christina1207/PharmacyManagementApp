@@ -21,9 +21,17 @@ namespace PharmacyManagmentApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? search)
         {
             var medications = await _medicationService.GetAllMedicationsAsync();
+            if (!string.IsNullOrEmpty(search))
+            {
+                var lowercasedSearch = search.ToLowerInvariant();
+                medications = medications.Where(m =>
+                    (m.Name != null && m.Name.ToLowerInvariant().Contains(lowercasedSearch)) ||
+                    (m.Barcode != null && m.Barcode.ToLowerInvariant().Contains(lowercasedSearch))
+                );
+            }
             return Ok(medications);
         }
 

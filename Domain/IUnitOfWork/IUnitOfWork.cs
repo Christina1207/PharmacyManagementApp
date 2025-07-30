@@ -1,10 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.IRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Domain.IUnitOfWork
 {
@@ -17,6 +13,9 @@ namespace Domain.IUnitOfWork
         IRepository<Sale, int> Sales { get; }
         IOrderRepository Orders { get; }
         IRepository<Medication,int> Medications { get; }
+
+        // inventory checks
+        IInventoryCheckRepository InventoryChecks { get; }
         Task<int> SaveChangesAsync();
     }
 }
