@@ -4,6 +4,7 @@ using Application.IServices.Auth;
 using Application.IServices.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PharmacyManagmentApp.Controllers
@@ -167,6 +168,26 @@ namespace PharmacyManagmentApp.Controllers
                 var success = await _userService.DeactivateUserAsync(id);
                 if (success) return NoContent();
                 return BadRequest("Failed to deactivate user.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
+
+        [HttpPost("User/{id}/reset-password")]
+        public async Task<IActionResult> ResetPassword(int id, [FromBody] PasswordResetDTO dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            try
+            {
+                var success = await _userService.ResetPasswordAsync(id, dto.NewPassword);
+                if (success)
+                {
+                    return Ok(new { Message = "Password has been reset successfully." });
+                }
+                return BadRequest("Failed to reset password.");
             }
             catch (KeyNotFoundException ex)
             {

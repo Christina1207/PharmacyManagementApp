@@ -9,5 +9,6 @@ namespace Application.IServices.User
         Task<bool> UpdateUserAsync(int id, UpdateUserDTO dto);
         Task<bool> ActivateUserAsync(int id);
         Task<bool> DeactivateUserAsync(int id);
+        Task<bool> ResetPasswordAsync(int id, string newPassword);
     }
 }

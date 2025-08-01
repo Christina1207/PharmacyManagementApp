@@ -94,5 +94,22 @@ namespace Application.Services
             var result = await _userManager.UpdateAsync(user);
             return result.Succeeded;
         }
+
+        public async Task<bool> ResetPasswordAsync(int id, string newPassword)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"User with ID {id} not found.");
+            }
+
+            // Generate a password reset token
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // Reset the password using the token
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            return result.Succeeded;
+        }
     }
 }
