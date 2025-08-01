@@ -149,7 +149,7 @@ namespace Application.Services
         public async Task DeleteMedicationAsync(int id)
         {
             _logger.LogInformation("Attempting to delete medication ID: {Id}", id);
-            var medication = await _medicationRepository.GetByIdAsync(id);
+            var medication = await _medicationRepository.GetByIdWithDetailsAsync(id);
             if (medication == null)
             {
                 _logger.LogWarning("Medication with ID {Id} not found for deletion.", id);

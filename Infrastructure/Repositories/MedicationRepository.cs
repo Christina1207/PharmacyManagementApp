@@ -23,6 +23,8 @@ namespace Infrastructure.Repositories
              .Include(m => m.Manufacturer)
              .Include(m => m.Form)
              .Include(m => m.Class)
+             .Include(m=>m.InventoryItems)
+             .Include(m=>m.PrescriptionItems)
              .Include(m => m.MedicationActiveIngredients)
              .ThenInclude(mai => mai.Ingredient)
              .FirstOrDefaultAsync();
