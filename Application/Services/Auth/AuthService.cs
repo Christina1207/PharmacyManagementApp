@@ -111,6 +111,10 @@ namespace Application.Services.Auth
             return IdentityResult.Success;
         }
 
+        public async Task<IdentityResult> RegisterAdminAsync(RegisterDTO registerDto)
+        {
+            return await RegisterAsync(registerDto, "Admin");
+        }
         public async Task LogoutAsync()
         {
             await Task.CompletedTask;

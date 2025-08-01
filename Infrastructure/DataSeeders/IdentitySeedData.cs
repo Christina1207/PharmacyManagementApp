@@ -13,7 +13,7 @@ namespace Infrastructure.DataSeeders
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
             // Add roles if they don't exist
-            string[] roleNames = { "Admin", "Pharmacist", "Assistant" };
+            string[] roleNames = { "Admin", "Pharmacist" };
             foreach (var roleName in roleNames)
             {
                 var roleExist = await roleManager.RoleExistsAsync(roleName);

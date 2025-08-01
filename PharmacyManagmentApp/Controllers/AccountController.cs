@@ -2,7 +2,6 @@
 using Application.DTOs.User;
 using Application.IServices.Auth;
 using Application.IServices.User;
-using Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -75,30 +74,20 @@ namespace PharmacyManagmentApp.Controllers
             return Ok(new { Status = "Success", Message = "Pharmacist registered successfully!" });
         }
 
-        [HttpPost("register-assistant")]
-        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> RegisterAssistant([FromBody] RegisterDTO model)
+        [HttpPost("register-admin")]
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterDTO dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new
-                {
-                    Error = "Validation failed",
-                    Details = ModelState.Values
-                        .SelectMany(v => v.Errors)
-                        .Select(e => e.ErrorMessage)
-                });
-            }
-            var result = await _authService.RegisterAsync(model, "Assistant");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _authService.RegisterAdminAsync(dto);
 
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
             }
 
-            return Ok(new { Status = "Success", Message = "Assistant registered successfully!" });
+            return Ok(new { Status = "Success", Message = "Admin registered successfully!" });
         }
-
 
         [HttpPost("logout")]
         [Authorize] //A user must be logged in to log out
