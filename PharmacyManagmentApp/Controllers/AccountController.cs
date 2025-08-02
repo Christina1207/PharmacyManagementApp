@@ -4,7 +4,6 @@ using Application.IServices.Auth;
 using Application.IServices.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PharmacyManagmentApp.Controllers
@@ -106,7 +105,7 @@ namespace PharmacyManagmentApp.Controllers
             return Ok(users);
         }
 
-        [HttpGet("User/{id}")]
+        [HttpGet("Users/{id}")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -121,7 +120,7 @@ namespace PharmacyManagmentApp.Controllers
             }
         }
 
-        [HttpPut("User/{id}")]
+        [HttpPut("Users/{id}")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO dto)
         {
@@ -143,7 +142,7 @@ namespace PharmacyManagmentApp.Controllers
             }
         }
 
-        [HttpPut("User/{id}/activate")]
+        [HttpPut("Users/{id}/activate")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ActivateUser(int id)
         {
@@ -159,7 +158,7 @@ namespace PharmacyManagmentApp.Controllers
             }
         }
 
-        [HttpPut("User/{id}/deactivate")]
+        [HttpPut("Users/{id}/deactivate")]
         [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeactivateUser(int id)
         {
@@ -175,7 +174,7 @@ namespace PharmacyManagmentApp.Controllers
             }
         }
 
-        [HttpPost("User/{id}/reset-password")]
+        [HttpPost("Users/{id}/reset-password")]
         public async Task<IActionResult> ResetPassword(int id, [FromBody] PasswordResetDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
