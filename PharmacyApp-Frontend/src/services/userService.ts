@@ -1,5 +1,6 @@
 import axios from 'axios';
 import authService from './authService';
+import apiClient from './apiClient';
 
 // Matches the UserDTO from the backend
 export interface User {
@@ -19,7 +20,7 @@ export interface UpdateUserPayload {
     isActive: boolean;
 }
 
-// Matches the RegisterDTO
+// Matches the RegisterDTO (to create admin)
 export interface RegisterPayload {
     username: string;
     email: string;
@@ -28,36 +29,29 @@ export interface RegisterPayload {
     lastName: string;
 }
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/Account/Users`;
+const API_URL = '/api/admin/users'; // common prefix 
 
-const getAuthHeaders = () => {
-    const user = authService.getCurrentUser();
-    return { Authorization: `Bearer ${user?.token}` };
-};
 
 const getUsers = async (): Promise<User[]> => {
-    const response = await axios.get(API_URL, { headers: getAuthHeaders() });
+    const response = await apiClient.get(API_URL);
     return response.data;
 };
 
 const activateUser = async (id: number): Promise<void> => {
-    await axios.put(`${API_URL}/${id}/activate`, {}, { headers: getAuthHeaders() });
+    await apiClient.put(`${API_URL}/${id}/activate`);
 };
 
 const deactivateUser = async (id: number): Promise<void> => {
-    await axios.put(`${API_URL}/${id}/deactivate`, {}, { headers: getAuthHeaders() });
+    await apiClient.put(`${API_URL}/${id}/deactivate`);
 };
 
 const resetPassword = async (id: number, newPassword: string): Promise<void> => {
-    await axios.post(`${API_URL}/${id}/reset-password`, { newPassword }, { headers: getAuthHeaders() });
+    await apiClient.post(`${API_URL}/${id}/reset-password`, { newPassword });
 };
 
 const registerAdmin = async (adminData: RegisterPayload): Promise<void> => {
-    await axios.post(`${API_URL}/register-admin`, adminData, { headers: getAuthHeaders() });
+    await apiClient.post(`${API_URL}/register-admin`, adminData);
 };
-const registerPharmacist = async (pharmacistData: RegisterPayload): Promise<void> =>{
-    await axios.post(`${API_URL}/register-pharmacist`, pharmacistData,{headers:getAuthHeaders()});
-}
 
 export default {
     getUsers,

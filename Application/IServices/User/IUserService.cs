@@ -1,4 +1,6 @@
-﻿using Application.DTOs.User;
+﻿using Application.DTOs.Auth;
+using Application.DTOs.User;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.IServices.User
 {
@@ -10,5 +12,7 @@ namespace Application.IServices.User
         Task<bool> ActivateUserAsync(int id);
         Task<bool> DeactivateUserAsync(int id);
         Task<bool> ResetPasswordAsync(int id, string newPassword);
+        Task<IdentityResult> RegisterAsync(RegisterDTO registerDto, string role);
+
     }
 }

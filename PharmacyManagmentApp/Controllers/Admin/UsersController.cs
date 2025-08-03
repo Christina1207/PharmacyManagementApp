@@ -1,4 +1,5 @@
-﻿using Application.DTOs.User;
+﻿using Application.DTOs.Auth;
+using Application.DTOs.User;
 using Application.IServices.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -21,6 +22,8 @@ namespace PharmacyManagmentApp.Controllers.Admin
             return Ok(users);
         }
 
+
+        //unused (remove later)
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -105,5 +108,49 @@ namespace PharmacyManagmentApp.Controllers.Admin
                 return NotFound(new { ex.Message });
             }
         }
+
+
+        // * Register * //
+
+        [HttpPost("register-pharmacist")]
+        public async Task<IActionResult> RegisterPharmacist([FromBody] RegisterDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new
+                {
+                    Error = "Validation failed",
+                    Details = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                });
+            }
+            var result = await _userService.RegisterAsync(model, "Pharmacist");
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(new { Status = "Success", Message = "Pharmacist registered successfully!" });
+        }
+
+
+        [HttpPost("register-admin")]
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterDTO dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _userService.RegisterAsync(dto, "Admin");
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(new { Status = "Success", Message = "Admin registered successfully!" });
+        }
+
+
     }
 }

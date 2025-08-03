@@ -43,6 +43,13 @@ const getCurrentUser = (): AuthResponse | null => {
   }
   return null;
 };
+const registerAdmin = async (adminData: RegisterPayload): Promise<void> => {
+    await axios.post(`${URL}/register-admin`, adminData, { headers: getAuthHeaders() });
+};
+const registerPharmacist = async (pharmacistData: RegisterPayload): Promise<void> =>{
+    await axios.post(`${URL}/register-pharmacist`, pharmacistData,{headers:getAuthHeaders()});
+}
+
 
 const authService = {
   login,

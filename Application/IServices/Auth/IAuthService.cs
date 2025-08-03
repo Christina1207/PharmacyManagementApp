@@ -5,11 +5,8 @@ namespace Application.IServices.Auth
 {
     public interface IAuthService
     {
-        Task<IdentityResult> RegisterAsync(RegisterDTO registerDto, string role);
         Task<AuthResponseDTO> LoginAsync(LoginDTO loginDto);
         Task LogoutAsync();
-        Task<IdentityResult> RegisterAdminAsync(RegisterDTO registerDto);
-
 
 
     }
