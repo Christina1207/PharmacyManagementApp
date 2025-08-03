@@ -46,13 +46,13 @@ namespace PharmacyManagmentApp.Controllers
             }
         }
 
-        [HttpGet("prescriptions")]
+        [HttpGet]
         public async Task<IActionResult> GetAllPrescriptions()
         {
             var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync();
             return Ok(prescriptions);
         }
-        [HttpGet("prescriptions/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetPrescriptionById(int id)
         {
             try

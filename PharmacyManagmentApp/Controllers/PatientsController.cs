@@ -143,6 +143,39 @@ namespace PharmacyManagmentApp.Controllers
             }
         }
 
+        [HttpGet("employees")]
+        public async Task<IActionResult> GetEmployees()
+        {
+
+            try
+            {
+                var result = await _employeeService.GetAllEmployeesAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Error = "Failed to retrieve employees",
+                    Details = ex.Message
+                });
+            }
+        }
+
+
+        [HttpGet("employees/{employeeId}/familymembers")]
+        public async Task<IActionResult> GetFamilyMembers(int employeeId)
+        {
+            try
+            {
+                var familyMembers = await _familyMemberService.GetEmployeeFamilyMembersAsync(employeeId);
+                return Ok(familyMembers);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
 
 
 
