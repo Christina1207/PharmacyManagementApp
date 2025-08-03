@@ -14,13 +14,7 @@ export interface User {
   createdAt: string;
 }
 
-// Matches the UpdateUserDTO
-export interface UpdateUserPayload {
-    role: string;
-    isActive: boolean;
-}
-
-// Matches the RegisterDTO (to create admin)
+// Matches the RegisterDTO (to create admin ,pharmacist)
 export interface RegisterPayload {
     username: string;
     email: string;
@@ -52,6 +46,11 @@ const resetPassword = async (id: number, newPassword: string): Promise<void> => 
 const registerAdmin = async (adminData: RegisterPayload): Promise<void> => {
     await apiClient.post(`${API_URL}/register-admin`, adminData);
 };
+
+const registerPharmacist = async (pharmacistData: RegisterPayload): Promise<void> => {
+    await apiClient.post(`${API_URL}/register-pharmacist`, pharmacistData);
+};
+
 
 export default {
     getUsers,
