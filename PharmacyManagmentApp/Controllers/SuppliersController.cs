@@ -1,5 +1,5 @@
-﻿using Application.DTOs.Department;
-using Application.IServices.Department;
+﻿using Application.DTOs.Supplier;
+using Application.IServices.Supplier;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,59 +7,57 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PharmacyManagmentApp.Controllers
 {
-    [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Admin,Pharmacist", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    [Route("api/admin/departments")]
-
-    public class DepartmentsController : Controller
+    [Route("api/suppliers")]
+    public class SuppliersController : Controller
     {
-        private readonly IDepartmentService _departmentService;
-        public DepartmentsController(IDepartmentService departmentService)
+        private readonly ISupplierService _supplierService;
+        public SuppliersController(ISupplierService supplierService)
         {
-            _departmentService = departmentService;
+            _supplierService = supplierService;
         }
-        
-        // * Departments*  //
+
         [HttpGet]
-        public async Task<IActionResult> GetDepartments()
+        public async Task<IActionResult> GetSuppliers()
         {
 
             try
             {
-                var result = await _departmentService.GetAllDepartmentsAsync();
+                var result = await _supplierService.GetAllSuppliersAsync();
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    Error = "Failed to retrieve departments",
+                    Error = "Failed to retrieve suppliers",
                     Details = ex.Message
                 });
             }
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDepartmentById(int id)
+        public async Task<IActionResult> GetSupplierById(int id)
         {
             try
             {
-                var dep = await _departmentService.GetDepartmentByIdAsync(id);
-                if (dep == null) return NotFound(new { Error = $"Department with ID {id} not found" });
-                return Ok(dep);
+                var sup = await _supplierService.GetSupplierByIdAsync(id);
+                if (sup == null) return NotFound(new { Error = $"Supplier with ID {id} not found" });
+                return Ok(sup);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    Error = $"An error occurred while retrieving department with ID {id}",
+                    Error = $"An error occurred while retrieving supplier with ID {id}",
                     Details = ex.Message
                 });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateDepartment([FromBody] CreateDepartmentDTO dto)
+        public async Task<IActionResult> CreateSupplier([FromBody] CreateSupplierDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -73,14 +71,14 @@ namespace PharmacyManagmentApp.Controllers
             }
             try
             {
-                var newDep = await _departmentService.CreateDepartmentAsync(dto);
-                return CreatedAtAction(nameof(GetDepartmentById), new { id = newDep.Id }, newDep);
+                var newSup = await _supplierService.CreateSupplierAsync(dto);
+                return CreatedAtAction(nameof(GetSupplierById), new { id = newSup.Id }, newSup);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    Error = "Failed to create department",
+                    Error = "Failed to create supplier",
                     Details = ex.Message
                 });
             }
@@ -88,7 +86,7 @@ namespace PharmacyManagmentApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDepartment(int id, [FromBody] UpdateDepartmentDTO dto)
+        public async Task<IActionResult> UpdateSupplier(int id, [FromBody] UpdateSupplierDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -102,7 +100,7 @@ namespace PharmacyManagmentApp.Controllers
             }
             try
             {
-                await _departmentService.UpdateDepartmentAsync(dto);
+                await _supplierService.UpdateSupplierAsync(dto);
                 return Ok(dto);
             }
             catch (KeyNotFoundException e)
@@ -119,14 +117,14 @@ namespace PharmacyManagmentApp.Controllers
             {
                 return StatusCode(500, new
                 {
-                    Error = $"An error occurred while updating department with ID {id}",
+                    Error = $"An error occurred while updating supplier with ID {id}",
                     Details = ex.Message
                 });
             }
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDepartment(int id)
+        public async Task<IActionResult> DeleteSupplier(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -140,8 +138,8 @@ namespace PharmacyManagmentApp.Controllers
             }
             try
             {
-                await _departmentService.DeleteDepartmentAsync(id);
-                return Ok($"Deleted department with id {id}");
+                await _supplierService.DeleteSupplierAsync(id);
+                return Ok($"Deleted supplier with id {id}");
             }
             catch (KeyNotFoundException e)
             {
@@ -157,12 +155,11 @@ namespace PharmacyManagmentApp.Controllers
             {
                 return StatusCode(500, new
                 {
-                    Error = $"An error occurred while Deleting Department with ID {id}",
+                    Error = $"An error occurred while Deleting Supplier with ID {id}",
                     Details = ex.Message
                 });
             }
         }
-
 
     }
 }

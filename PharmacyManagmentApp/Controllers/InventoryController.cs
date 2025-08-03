@@ -8,7 +8,7 @@ namespace PharmacyManagmentApp.Controllers
 {
     [Authorize (Roles ="Admin,Pharmacist",AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/inventory")]
     public class InventoryController :ControllerBase
     {
         private readonly IInventoryService _inventoryService;

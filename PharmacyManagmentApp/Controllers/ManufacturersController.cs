@@ -1,5 +1,5 @@
-﻿using Application.DTOs.Doctor;
-using Application.IServices.Doctor;
+﻿using Application.DTOs.Manufacturer;
+using Application.IServices.Manufacturer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,59 +7,58 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PharmacyManagmentApp.Controllers
 {
-    [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Pharmacist", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    [Route("api/admin/doctors")]
-    public class DoctorsController : Controller
+    [Route("api/manufacturers")]
+    public class ManufacturersController : Controller
     {
-        private readonly IDoctorService _doctorService;
-        public DoctorsController(IDoctorService doctorService)
+        private readonly IManufacturerService _manufacturerService;
+        public ManufacturersController(IManufacturerService manufacturerService)
         {
-            _doctorService = doctorService;
+            _manufacturerService = manufacturerService;
         }
 
-        // * Doctors * //
 
         [HttpGet]
-        public async Task<IActionResult> GetDoctors()
+        public async Task<IActionResult> GetManufacturers()
         {
 
             try
             {
-                var result = await _doctorService.GetAllDoctorsAsync();
+                var result = await _manufacturerService.GetAllManufacturersAsync();
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    Error = "Failed to retrieve doctors",
+                    Error = "Failed to retrieve manufacturers",
                     Details = ex.Message
                 });
             }
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDoctorById(int id)
+        public async Task<IActionResult> GetManufacturerById(int id)
         {
             try
             {
-                var dep = await _doctorService.GetDoctorByIdAsync(id);
-                if (dep == null) return NotFound(new { Error = $"Doctor with ID {id} not found" });
-                return Ok(dep);
+                var sup = await _manufacturerService.GetManufacturerByIdAsync(id);
+                if (sup == null) return NotFound(new { Error = $"Manufacturer with ID {id} not found" });
+                return Ok(sup);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    Error = $"An error occurred while retrieving doctor with ID {id}",
+                    Error = $"An error occurred while retrieving manufacturer with ID {id}",
                     Details = ex.Message
                 });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorDTO dto)
+        public async Task<IActionResult> CreateManufacturer([FromBody] CreateManufacturerDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -73,14 +72,14 @@ namespace PharmacyManagmentApp.Controllers
             }
             try
             {
-                var newDep = await _doctorService.CreateDoctorAsync(dto);
-                return CreatedAtAction(nameof(GetDoctorById), new { id = newDep.Id }, newDep);
+                var newSup = await _manufacturerService.CreateManufacturerAsync(dto);
+                return CreatedAtAction(nameof(GetManufacturerById), new { id = newSup.Id }, newSup);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    Error = "Failed to create doctor",
+                    Error = "Failed to create manufacturer",
                     Details = ex.Message
                 });
             }
@@ -88,7 +87,7 @@ namespace PharmacyManagmentApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDoctor(int id, [FromBody] UpdateDoctorDTO dto)
+        public async Task<IActionResult> UpdateManufacturer(int id, [FromBody] UpdateManufacturerDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -102,7 +101,7 @@ namespace PharmacyManagmentApp.Controllers
             }
             try
             {
-                await _doctorService.UpdateDoctorAsync(dto);
+                await _manufacturerService.UpdateManufacturerAsync(dto);
                 return Ok(dto);
             }
             catch (KeyNotFoundException e)
@@ -119,14 +118,14 @@ namespace PharmacyManagmentApp.Controllers
             {
                 return StatusCode(500, new
                 {
-                    Error = $"An error occurred while updating doctor with ID {id}",
+                    Error = $"An error occurred while updating manufacturer with ID {id}",
                     Details = ex.Message
                 });
             }
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDoctor(int id)
+        public async Task<IActionResult> DeleteManufacturer(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -140,8 +139,8 @@ namespace PharmacyManagmentApp.Controllers
             }
             try
             {
-                await _doctorService.DeleteDoctorAsync(id);
-                return Ok($"Deleted doctor with id {id}");
+                await _manufacturerService.DeleteManufacturerAsync(id);
+                return Ok($"Deleted manufacturer with id {id}");
             }
             catch (KeyNotFoundException e)
             {
@@ -157,11 +156,12 @@ namespace PharmacyManagmentApp.Controllers
             {
                 return StatusCode(500, new
                 {
-                    Error = $"An error occurred while Deleting Doctor with ID {id}",
+                    Error = $"An error occurred while Deleting Manufacturer with ID {id}",
                     Details = ex.Message
                 });
             }
         }
+
 
     }
 }

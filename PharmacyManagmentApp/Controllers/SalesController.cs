@@ -7,7 +7,7 @@ namespace PharmacyManagmentApp.Controllers
 {
     [Authorize(Roles = "Admin,Pharmacist",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/sales")]
     public class SalesController : ControllerBase
     {
         private readonly ISaleService _saleService;

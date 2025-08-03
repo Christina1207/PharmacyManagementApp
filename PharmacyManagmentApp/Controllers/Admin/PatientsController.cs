@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PharmacyManagmentApp.Controllers
+namespace PharmacyManagmentApp.Controllers.Admin
 {
     [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
@@ -44,7 +44,7 @@ namespace PharmacyManagmentApp.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message });
+                return NotFound(new { ex.Message });
             }
         }
 
@@ -58,7 +58,7 @@ namespace PharmacyManagmentApp.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message });
+                return NotFound(new { ex.Message });
             }
         }
 
@@ -72,7 +72,7 @@ namespace PharmacyManagmentApp.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message });
+                return NotFound(new { ex.Message });
             }
         }
 
@@ -91,7 +91,7 @@ namespace PharmacyManagmentApp.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message });
+                return NotFound(new { ex.Message });
             }
         }
 
@@ -173,7 +173,7 @@ namespace PharmacyManagmentApp.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message });
+                return NotFound(new { ex.Message });
             }
         }
 

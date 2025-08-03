@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace PharmacyManagmentApp.Controllers
 {
-    [Authorize(Roles = "Pharmacist,Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Pharmacist", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/prescriptions")]
     public class PrescriptionController : ControllerBase
     {
         private readonly IPrescriptionService _prescriptionService;

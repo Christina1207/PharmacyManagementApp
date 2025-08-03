@@ -9,7 +9,7 @@ namespace PharmacyManagmentApp.Controllers
 {
     [Authorize(Roles = "Admin,Pharmacist", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/orders")]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderService;
