@@ -63,7 +63,6 @@ The repository is organized into two main parts: the backend solution and the fr
 └── PharmacyApp-Frontend/     # React Frontend Application
     ├── public/               # Static assets
     └── src/                  # Main source code
-        ├── api/              # Mock API data and functions
         ├── components/       # Reusable UI components (including shadcn/ui)
         ├── context/          # React Context for state management
         ├── hooks/            # Custom React hooks
