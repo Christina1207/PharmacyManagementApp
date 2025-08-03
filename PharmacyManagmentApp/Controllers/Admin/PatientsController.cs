@@ -11,7 +11,7 @@ namespace PharmacyManagmentApp.Controllers.Admin
 {
     [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    [Route("api/admin/patients")]
+    [Route("api/patients")]
     public class PatientsController : Controller
     {
         private readonly IInsuredPersonService _insuredPersonService;
@@ -35,6 +35,7 @@ namespace PharmacyManagmentApp.Controllers.Admin
         }
 
         [HttpGet("{id}")]  // GET /api/admin/patients/{id}
+        [Authorize(Roles ="Admin,Pharmcist")]
         public async Task<IActionResult> GetPatientById(int id)
         {
             try

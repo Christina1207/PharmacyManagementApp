@@ -38,27 +38,6 @@ namespace PharmacyManagmentApp.Controllers.Admin
             }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO dto)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            try
-            {
-                var success = await _userService.UpdateUserAsync(id, dto);
-                if (success) return NoContent();
-                return BadRequest("Failed to update user.");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
-            }
-        }
-
         [HttpPut("{id}/activate")]
         public async Task<IActionResult> ActivateUser(int id)
         {

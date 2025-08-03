@@ -1,5 +1,5 @@
-import axios from 'axios';
-import authService from './authService';
+import apiClient from './apiClient';
+
 
 export interface Doctor {
     id: number;
@@ -7,24 +7,36 @@ export interface Doctor {
     lastName: string;
     speciality: string;
 }
+export interface DoctorPayload {
+    firstName: string;
+    lastName: string;
+    speciality: string;
+}
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/Admin/AdminDashboard`;
+const API_URL = '/api/admin/doctors';
+// --- Service Methods ---
 
-const getAuthHeaders = () => {
-    const user = authService.getCurrentUser();
-    return { Authorization: `Bearer ${user?.token}` };
+const getDoctors = async (): Promise<Doctor[]> => {
+    const response = await apiClient.get(API_URL);
+    return response.data;
 };
 
-const searchDoctors = async (searchTerm: string): Promise<Doctor[]> => {
-    const response = await axios.get<Doctor[]>(`${API_URL}/Doctors`, { headers: getAuthHeaders() });
-    
-    if (!searchTerm) return [];
-
-    const lowercasedTerm = searchTerm.toLowerCase();
-    return response.data.filter(d =>
-        d.firstName.toLowerCase().includes(lowercasedTerm) ||
-        d.lastName.toLowerCase().includes(lowercasedTerm)
-    );
+const createDoctor = async (doctorData: DoctorPayload): Promise<Doctor> => {
+    const response = await apiClient.post(API_URL, doctorData);
+    return response.data;
 };
 
-export default { searchDoctors };
+const updateDoctor = async (id: number, doctorData: DoctorPayload): Promise<void> => {
+    await apiClient.put(`${API_URL}/${id}`, doctorData);
+};
+
+const deleteDoctor = async (id: number): Promise<void> => {
+    await apiClient.delete(`${API_URL}/${id}`);
+};
+
+export default {
+    getDoctors,
+    createDoctor,
+    updateDoctor,
+    deleteDoctor
+};
