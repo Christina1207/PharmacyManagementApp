@@ -84,3 +84,6 @@ appsettings.Development.json
 .env.production.local
 .env.staging.local
 .env.test.local
+
+#docx
+.docx
