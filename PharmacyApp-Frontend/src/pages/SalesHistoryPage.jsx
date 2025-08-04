@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { useToast } from '../hooks/use-toast';
 import saleService from '../services/saleService';
-import { Receipt, Search, DollarSign, Calendar } from 'lucide-react';
+import { Receipt, Search, DollarSign } from 'lucide-react';
 
 const SalesHistoryPage = () => {
     const [sales, setSales] = useState([]);
@@ -14,29 +14,43 @@ const SalesHistoryPage = () => {
     const { toast } = useToast();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchSales = async () => {
-            try {
-                // Assuming getSales will be updated to return the date.
-                // For now, we'll use a placeholder or it might fail gracefully.
-                const data = await saleService.getSales();
-                setSales(data);
-            } catch (error) {
-                toast({ title: "Error", description: "Failed to fetch sales history.", variant: "destructive" });
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSales();
+    const fetchSalesWithDetails = useCallback(async () => {
+        try {
+            // 1. Fetch the initial list of sales
+            const initialSales = await saleService.getSales();
+
+            // 2. Create an array of promises to fetch details for each sale
+            const detailPromises = initialSales.map(sale =>
+                saleService.getSaleDetails(sale.id).catch(err => {
+                    console.error(`Failed to fetch details for sale #${sale.id}`, err);
+                    // Return the original sale object on error to avoid breaking the UI
+                    return sale; 
+                })
+            );
+
+            // 3. Wait for all detail requests to complete
+            const detailedSales = await Promise.all(detailPromises);
+
+            setSales(detailedSales);
+
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to fetch sales history.", variant: "destructive" });
+        } finally {
+            setLoading(false);
+        }
     }, [toast]);
 
+    useEffect(() => {
+        fetchSalesWithDetails();
+    }, [fetchSalesWithDetails]);
+
     const filteredSales = sales.filter(sale =>
-        sale.pharmacistName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sale.id.toString().includes(searchTerm) ||
-        sale.prescriptionId.toString().includes(searchTerm)
+        (sale.pharmacistName && sale.pharmacistName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (sale.id && sale.id.toString().includes(searchTerm)) ||
+        (sale.prescriptionId && sale.prescriptionId.toString().includes(searchTerm))
     );
 
-    const totalRevenue = sales.reduce((sum, sale) => sum + sale.amountReceived, 0);
+    const totalRevenue = sales.reduce((sum, sale) => sum + (sale.amountReceived || 0), 0);
 
     if (loading) {
         return (
@@ -84,20 +98,27 @@ const SalesHistoryPage = () => {
                                 <TableHead>Sale ID</TableHead>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Pharmacist</TableHead>
-                                <TableHead className="text-right">Amount Paid</TableHead>
+                                <TableHead className="text-right">Total Amount</TableHead>
+                                <TableHead className="text-right">Discount</TableHead>
+                                <TableHead className="text-right">Amount Received</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredSales.length > 0 ? filteredSales.map((sale) => (
                                 <TableRow key={sale.id} className="cursor-pointer" onClick={() => navigate(`/sales/${sale.id}`)}>
                                     <TableCell className="font-mono">#{sale.id}</TableCell>
-                                    <TableCell className="text-muted-foreground">{new Date(sale.dispenseDate || Date.now()).toLocaleDateString()}</TableCell>
+                                    <TableCell>
+                                        {sale.dispenseDate ? new Date(sale.dispenseDate).toLocaleDateString() : 'N/A'}
+                                    </TableCell>
+                                    
                                     <TableCell className="font-medium">{sale.pharmacistName}</TableCell>
-                                    <TableCell className="text-right font-mono font-bold">${sale.amountReceived.toFixed(2)}</TableCell>
+                                    <TableCell className="text-right font-mono">${(sale.totalAmount || 0).toFixed(2)}</TableCell>
+                                    <TableCell className="text-right font-mono text-green-600">-${(sale.discount || 0).toFixed(2)}</TableCell>
+                                    <TableCell className="text-right font-mono font-bold">${(sale.amountReceived || 0).toFixed(2)}</TableCell>
                                 </TableRow>
                             )) : (
                                 <TableRow>
-                                    <TableCell colSpan="4" className="h-24 text-center text-muted-foreground">
+                                    <TableCell colSpan="7" className="h-24 text-center text-muted-foreground">
                                         No sales found.
                                     </TableCell>
                                 </TableRow>
