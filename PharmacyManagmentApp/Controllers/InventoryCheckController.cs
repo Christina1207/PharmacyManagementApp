@@ -10,7 +10,7 @@ namespace PharmacyManagmentApp.Controllers
 {
     [Authorize(Roles = "Admin,Pharmacist", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    [Route("api/inventoryCheck")]
+    [Route("api/inventoryChecks")]
     public class InventoryCheckController : ControllerBase
     {
         private readonly IInventoryCheckService _checkService;

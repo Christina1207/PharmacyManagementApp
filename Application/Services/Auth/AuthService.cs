@@ -66,6 +66,7 @@ namespace Application.Services.Auth
                 Expiration = token.ValidTo,
                 User = new UserInfoDTO
                 {
+                    id=user.Id,
                     Username = user.UserName,
                     FirstName = user.FirstName,
                     LastName = user.LastName,

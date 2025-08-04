@@ -34,12 +34,17 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      await login(username, password);
+      const authResponse = await login(username, password);
       toast({
         title: "Login Successful",
-        description: "Welcome back!"
+        description: `Welcome back, ${authResponse.user.firstName}!`
       });
-      navigate(from, { replace: true });
+      
+       if (authResponse.user.role === 'Pharmacist') {
+                navigate('/dispense'); // Redirect Pharmacist to the dispense page
+            } else {
+                navigate('/dashboard'); // Redirect Admin to the dashboard
+            }
     } catch (error) {
       toast({
         title: "Login Failed",

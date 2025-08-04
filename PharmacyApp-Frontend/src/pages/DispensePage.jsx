@@ -8,22 +8,25 @@ import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescript
 import { Separator } from '../components/ui/separator';
 import { useToast } from '../hooks/use-toast';
 import _ from 'lodash';
+import { useAuth } from '../context/AuthContext.jsx';
 
-// --- Import Real Services ---
+// --- ImportServices ---
 import patientService from '../services/patientService';
 import doctorService from '../services/doctorService';
 import medicationService from '../services/medicationService';
 import diagnosisService from '../services/diagnosisService';
 import prescriptionService from '../services/prescriptionService';
 
-import { FileText, User, UserCheck, Plus, Trash2, Receipt, Loader2, Stethoscope, Pill, X } from 'lucide-react';
+import {User, UserCheck, Plus, Trash2, Receipt, Loader2, Stethoscope, Pill, X } from 'lucide-react';
 
 const DispensePage = () => {
+  // state for selected entities
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState('');
   const [prescriptionItems, setPrescriptionItems] = useState([]);
   
+  // state for search input and results
   const [patientSearch, setPatientSearch] = useState('');
   const [doctorSearch, setDoctorSearch] = useState('');
   const [medicationSearch, setMedicationSearch] = useState('');
@@ -31,18 +34,19 @@ const DispensePage = () => {
   const [patientSuggestions, setPatientSuggestions] = useState([]);
   const [doctorSuggestions, setDoctorSuggestions] = useState([]);
   const [medicationSuggestions, setMedicationSuggestions] = useState([]);
+  
   const [diagnoses, setDiagnoses] = useState([]);
-
   const [loading, setLoading] = useState(false);
   const [saleResult, setSaleResult] = useState(null);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    diagnosisService.getDiagnoses()
-      .then(setDiagnoses)
-      .catch(() => toast({ title: "Error", description: "Could not fetch diagnoses.", variant: "destructive" }));
-  }, [toast]);
-  
+  const {toast } = useToast();
+  const {user}=useAuth();
+ // Fetch diagnoses on component mount
+    useEffect(() => {
+        diagnosisService.getDiagnoses()
+            .then(setDiagnoses)
+            .catch(() => toast({ title: "Error", description: "Could not fetch diagnoses.", variant: "destructive" }));
+    }, [toast]);
+    
   const debouncedSearch = useCallback(_.debounce(async (term, service, setter) => {
     if (term.length > 1) {
         try {
@@ -101,11 +105,16 @@ const DispensePage = () => {
 
     setLoading(true);
     try {
-      const prescriptionData = {
-        patientId: selectedPatient.id,
-        doctorId: selectedDoctor.id,
-        diagnosisId: parseInt(selectedDiagnosis),
-        prescriptionItems: prescriptionItems.map(({ medicationId, quantity }) => ({ medicationId, quantity }))
+        console.log('user',user);
+const prescriptionData = {
+        PatientId: selectedPatient.id,
+        DoctorId: selectedDoctor.id,
+        DiagnosisId: parseInt(selectedDiagnosis),
+        UserId: user.id, // Add the user's ID here
+        PrescriptionItems: prescriptionItems.map(({ medicationId, quantity }) => ({ 
+            MedicationId: medicationId, // Correct casing
+            Quantity: quantity // Correct casing
+        }))
       };
 
       const result = await prescriptionService.dispensePrescription(prescriptionData);

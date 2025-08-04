@@ -7,8 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Badge } from '../components/ui/badge';
 import { useToast } from '../hooks/use-toast';
-import { getPatients, createPatient, updatePatient, deletePatient } from '../api/mockApi.js';
 import { Users, Plus, Search, Edit, Trash2, Phone, Mail } from 'lucide-react';
+import patientService from '../services/patientService';
 
 const PatientsPage = () => {
   const [patients, setPatients] = useState([]);
@@ -38,7 +38,7 @@ const PatientsPage = () => {
 
   const fetchPatients = async () => {
     try {
-      const data = await getPatients();
+      const data = await patientService.getPatients();
       setPatients(data);
     } catch (error) {
       toast({

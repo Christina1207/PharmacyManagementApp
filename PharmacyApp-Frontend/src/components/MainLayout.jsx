@@ -16,7 +16,8 @@ import {
   User,
   Building2,
   UserCheck,
-  ChevronLeft, // Icon for the collapse button
+  ChevronLeft, 
+  ClipboardCheck
 } from 'lucide-react';
 
 const MainLayout = () => {
@@ -46,13 +47,14 @@ const MainLayout = () => {
   };
 
   const menuItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['Admin', 'Pharmacist'] },
-   { path: '/dispense', label: 'Dispense', icon: FileText, roles: ['Admin', 'Pharmacist'] },
+    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['Admin'] },
+    { path: '/patients', label: 'Patients', icon: Users, roles: ['Admin'] },
+    { path: '/dispense', label: 'Dispense', icon: FileText, roles: ['Pharmacist'] },
     { path: '/sales', label: 'Sales History', icon: Receipt, roles: ['Admin', 'Pharmacist'] },
-    { path: '/patients', label: 'Patients', icon: Users, roles: ['Admin', 'Pharmacist'] },
     { path: '/medications', label: 'Medications', icon: Pill, roles: ['Admin', 'Pharmacist'] },
     { path: '/inventory/receive-order', label: 'Receive Order', icon: Truck, roles: ['Admin', 'Pharmacist'] },
     { path: '/inventory', label: 'Inventory', icon: Package, roles: ['Admin', 'Pharmacist'] },
+    { path: '/inventory/checks', label: 'Stock Counts', icon: ClipboardCheck, roles: ['Admin', 'Pharmacist'] },
     { path: '/admin/departments', label: 'Departments', icon: Building2, roles: ['Admin'] },
     { path: '/admin/doctors', label: 'Doctors', icon: UserCheck, roles: ['Admin'] },
     { path: '/admin/users', label: 'Users', icon: Settings, roles: ['Admin'] }
@@ -132,7 +134,7 @@ const MainLayout = () => {
       {/* --- Main Content --- */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header (This will always be visible at the top) */}
-        <header className="bg-card border-b border-border p-4">
+        <header className="bg-card border-b border-border p-2">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-foreground">

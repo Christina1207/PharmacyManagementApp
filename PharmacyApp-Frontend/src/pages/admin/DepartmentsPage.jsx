@@ -3,179 +3,149 @@ import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
-import { Badge } from '../../components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../components/ui/alert-dialog';
 import { useToast } from '../../hooks/use-toast';
-import { getDepartments, createDepartment } from '../../api/mockApi.js';
-import { Building2, Plus, Search } from 'lucide-react';
+import departmentService from '../../services/departmentService'; // <-- Import the REAL service
+import { Plus, Search, Edit, Trash2, Building } from 'lucide-react';
 
 const DepartmentsPage = () => {
-  const [departments, setDepartments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    code: ''
-  });
-  const { toast } = useToast();
+    const [departments, setDepartments] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [editingDepartment, setEditingDepartment] = useState(null);
+    const [formData, setFormData] = useState({ name: '' });
+    const { toast } = useToast();
 
-  useEffect(() => {
-    fetchDepartments();
-  }, []);
+    const fetchDepartments = async () => {
+        setLoading(true);
+        try {
+            const data = await departmentService.getDepartments();
+            setDepartments(data);
+        } catch (error) {
+            toast({ title: "Error", description: "Could not fetch departments.", variant: "destructive" });
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const fetchDepartments = async () => {
-    try {
-      const data = await getDepartments();
-      setDepartments(data);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch departments",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    useEffect(() => {
+        fetchDepartments();
+    }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    try {
-      await createDepartment(formData);
-      toast({
-        title: "Success",
-        description: "Department created successfully"
-      });
-      
-      fetchDepartments();
-      setIsDialogOpen(false);
-      resetForm();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-  };
+    const resetForm = () => {
+        setEditingDepartment(null);
+        setFormData({ name: '' });
+    };
 
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      code: ''
-    });
-  };
+    const handleEdit = (department) => {
+        setEditingDepartment(department);
+        setFormData({ name: department.name });
+        setIsDialogOpen(true);
+    };
 
-  const filteredDepartments = departments.filter(dept =>
-    dept.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dept.code.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (editingDepartment) {
+                await departmentService.updateDepartment(editingDepartment.id, formData);
+                toast({ title: "Success", description: "Department updated successfully." });
+            } else {
+                await departmentService.createDepartment(formData);
+                toast({ title: "Success", description: "Department created successfully." });
+            }
+            setIsDialogOpen(false);
+            fetchDepartments(); // Refresh data from the server
+        } catch (error) {
+            toast({ title: "Error", description: "Operation failed.", variant: "destructive" });
+        }
+    };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
+    const handleDelete = async (id) => {
+        try {
+            await departmentService.deleteDepartment(id);
+            toast({ title: "Success", description: "Department deleted." });
+            fetchDepartments(); // Refresh data from the server
+        } catch (error) {
+            toast({ title: "Error", description: "Could not delete department.", variant: "destructive" });
+        }
+    };
+
+    // Client-side filtering for search
+    const filteredDepartments = departments.filter(dept =>
+        dept.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }
 
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Department Management</h1>
-          <p className="text-muted-foreground">Manage organization departments</p>
-        </div>
-        
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => resetForm()}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Department
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Department</DialogTitle>
-              <DialogDescription>
-                Create a new department in the organization
-              </DialogDescription>
-            </DialogHeader>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Department Name</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  required
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="code">Department Code</Label>
-                <Input
-                  id="code"
-                  value={formData.code}
-                  onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
-                  placeholder="e.g., ENG, HR, MKT"
-                  required
-                />
-              </div>
-
-              <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit">Create Department</Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Search */}
-      <div className="flex items-center space-x-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search departments..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Badge variant="secondary">
-          {filteredDepartments.length} departments
-        </Badge>
-      </div>
-
-      {/* Departments Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredDepartments.map((department) => (
-          <Card key={department.id}>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Building2 className="w-5 h-5" />
-                <span>{department.name}</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Code:</span>
-                  <Badge variant="outline">{department.code}</Badge>
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-2xl font-bold">Departments</h1>
+                    <p className="text-muted-foreground">Manage employee departments.</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button onClick={resetForm}><Plus className="w-4 h-4 mr-2" />Add Department</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader><DialogTitle>{editingDepartment ? 'Edit Department' : 'Add New Department'}</DialogTitle></DialogHeader>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <Label htmlFor="dept-name">Department Name</Label>
+                                <Input id="dept-name" value={formData.name} onChange={e => setFormData({ name: e.target.value })} required />
+                            </div>
+                            <Button type="submit" className="w-full">{editingDepartment ? 'Save Changes' : 'Create Department'}</Button>
+                        </form>
+                    </DialogContent>
+                </Dialog>
+            </div>
+
+            <div className="relative max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Search departments..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" />
+            </div>
+            
+            <Card>
+                <CardHeader><CardTitle className="flex items-center space-x-2"><Building className="w-5 h-5"/><span>All Departments</span></CardTitle></CardHeader>
+                <CardContent>
+                    <table className="w-full">
+                        <thead>
+                            <tr className="border-b">
+                                <th className="text-left p-2">Name</th>
+                                <th className="text-right p-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredDepartments.map(department => (
+                                <tr key={department.id} className="border-b hover:bg-muted/50">
+                                    <td className="p-2 font-medium">{department.name}</td>
+                                    <td className="p-2 flex justify-end space-x-2">
+                                        <Button variant="outline" size="sm" onClick={() => handleEdit(department)}>
+                                            <Edit className="w-4 h-4 mr-2" />Edit
+                                        </Button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild><Button variant="destructive" size="sm"><Trash2 className="w-4 h-4 mr-2" />Delete</Button></AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>This will permanently delete the department.</AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleDelete(department.id)}>Delete</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </CardContent>
+            </Card>
+        </div>
+    );
 };
 
 export default DepartmentsPage;

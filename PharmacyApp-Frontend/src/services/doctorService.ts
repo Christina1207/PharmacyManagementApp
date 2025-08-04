@@ -33,10 +33,15 @@ const updateDoctor = async (id: number, doctorData: DoctorPayload): Promise<void
 const deleteDoctor = async (id: number): Promise<void> => {
     await apiClient.delete(`${API_URL}/${id}`);
 };
+const searchDoctors = async (term: string): Promise<Doctor[]> => {
+    const response = await apiClient.get(`/api/search/doctors?term=${term}`);
+    return response.data;
+};
 
 export default {
     getDoctors,
     createDoctor,
     updateDoctor,
-    deleteDoctor
+    deleteDoctor,
+    searchDoctors
 };

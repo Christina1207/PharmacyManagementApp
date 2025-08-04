@@ -7,7 +7,7 @@ export interface Supplier {
   phoneNumber?: string;
 }
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/Pharmacist/PharmacistDashboard`;
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
 const getSuppliers = async (): Promise<Supplier[]> => {
   const user = authService.getCurrentUser();
@@ -21,7 +21,7 @@ const getSuppliers = async (): Promise<Supplier[]> => {
 const createSupplier = async (supplierData: { name: string, phoneNumber?: string }): Promise<Supplier> => {
     const user = authService.getCurrentUser();
     const token = user?.token;
-    const response = await axios.post(`${API_URL}/Supplier`, supplierData, {
+    const response = await axios.post(`${API_URL}/Suppliers`, supplierData, {
         headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;

@@ -4,6 +4,7 @@ import apiClient from './apiClient';
 
 // Matches UserInfoDTO
 interface UserInfo {
+  id :number;
   username: string;
   firstName: string;
   lastName: string;

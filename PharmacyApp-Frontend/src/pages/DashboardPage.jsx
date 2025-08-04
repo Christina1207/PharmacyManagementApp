@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Users, Pill, Package, FileText, TrendingUp, AlertTriangle } from 'lucide-react';
-import { getPatients, getMedications, getInventory } from '../api/mockApi.js';
 
 const DashboardPage = () => {
   const [stats, setStats] = useState({

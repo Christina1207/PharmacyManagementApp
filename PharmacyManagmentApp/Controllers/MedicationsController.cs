@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace PharmacyManagmentApp.Controllers
 {
 
-    [Authorize(Roles = "Pharmacist",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Admin,Pharmacist",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("api/medications")]
     public class MedicationsController : Controller
@@ -271,7 +271,7 @@ namespace PharmacyManagmentApp.Controllers
 
             try
             {
-                var result = await _medicationFormService.GetAllMedicationFormsAsync();
+                var result = await _medicationClassService.GetAllMedicationClassesAsync();
                 return Ok(result);
             }
             catch (Exception ex)

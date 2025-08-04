@@ -12,12 +12,16 @@ import DispensePage from "./pages/DispensePage.jsx";
 import PatientsPage from "./pages/PatientsPage.jsx";
 import MedicationsPage from "./pages/MedicationsPage.jsx";
 import InventoryPage from "./pages/InventoryPage.jsx";
+import NewInventoryCheckPage from "./pages/NewInventoryCheckPage.jsx"
 import DepartmentsPage from "./pages/admin/DepartmentsPage.jsx";
 import DoctorsPage from "./pages/admin/DoctorsPage.jsx";
 import UsersPage from "./pages/admin/UsersPage.jsx";
 import ReceiveOrderPage from "./pages/ReceiveOrderPage.jsx";
 import SalesHistoryPage from "./pages/SalesHistoryPage.jsx";
+import InventoryCheckListPage from './pages/InventoryCheckListPage.jsx';
+import InventoryCheckDetailPage from './pages/InventoryCheckDetailPage.jsx';
 import NotFound from "./pages/NotFound";
+import SaleReceiptPage from './pages/SaleReceiptPage';
 
 const queryClient = new QueryClient();
 
@@ -37,6 +41,7 @@ const App = () => (
                 <MainLayout />
               </PrivateRoute>
             }>
+              <Route path="inventory/new-check" element={<NewInventoryCheckPage />} />
               <Route path="inventory/receive-order" element={<ReceiveOrderPage />} />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="dispense" element={<DispensePage />} />
@@ -47,6 +52,9 @@ const App = () => (
               <Route path="admin/doctors" element={<DoctorsPage />} />
               <Route path="admin/users" element={<UsersPage />} />
               <Route path="sales" element={<SalesHistoryPage />} />
+              <Route path="inventory/checks" element={<InventoryCheckListPage />} />
+              <Route path="inventory/checks/:id" element={<InventoryCheckDetailPage />} />
+              <Route path="sales/:id" element={<SaleReceiptPage />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

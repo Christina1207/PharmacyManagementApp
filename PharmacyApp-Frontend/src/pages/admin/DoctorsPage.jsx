@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../components/ui/alert-dialog';
 import { useToast } from '../../hooks/use-toast';
 import doctorService from '../../services/doctorService';
-import { Plus, Search, Edit, Trash2, UserMd } from 'lucide-react'; // UserMd is a placeholder icon for doctor
+import { Plus, Search, Edit, Trash2 } from 'lucide-react'; // UserMd is a placeholder icon for doctor
 
 const DoctorsPage = () => {
     const [doctors, setDoctors] = useState([]);

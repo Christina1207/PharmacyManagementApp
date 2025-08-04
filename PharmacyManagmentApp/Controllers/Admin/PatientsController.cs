@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PharmacyManagmentApp.Controllers.Admin
 {
-    [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Admin,Pharmacist", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("api/patients")]
     public class PatientsController : Controller

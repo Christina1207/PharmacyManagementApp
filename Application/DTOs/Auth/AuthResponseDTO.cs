@@ -9,6 +9,7 @@ namespace Application.DTOs.Auth
     }
     public class UserInfoDTO
     {
+        public int id { get; set; }
         public string? Username { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

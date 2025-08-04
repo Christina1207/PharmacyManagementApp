@@ -1,15 +1,34 @@
-import axios from 'axios';
-import authService from './authService';
+import apiClient from './apiClient';
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}/Prescription`;
+// Matches the CreatePrescriptionDTO on the backend
+export interface PrescriptionItemPayload {
+    MedicationId: number;
+    Quantity: number;
+}
 
-const dispensePrescription = async (prescriptionData: any) => {
-    const user = authService.getCurrentUser();
-    const token = user?.token;
+export interface PrescriptionPayload {
+    PatientId: number;
+    DoctorId: number;
+    DiagnosisId: number;
+    UserId: number;
+    PrescriptionItems: PrescriptionItemPayload[];
+}
 
-    const response = await axios.post(`${API_URL}/dispense`, prescriptionData, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
+// Matches the Sale DTO returned from the backend
+export interface SaleResult {
+    id: number;
+    prescriptionId: number;
+    totalAmount: number;
+    discount: number;
+    amountReceived: number;
+}
+
+
+const API_URL = '/api/prescriptions';
+
+const dispensePrescription = async (prescriptionData: PrescriptionPayload): Promise<SaleResult> => {
+    // Now using the global apiClient, which handles auth automatically
+    const response = await apiClient.post<SaleResult>(`${API_URL}/dispense`, prescriptionData);
     return response.data;
 };
 

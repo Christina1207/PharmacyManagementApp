@@ -18,7 +18,7 @@ namespace PharmacyManagmentApp.Controllers
             _diagnosisService = diagnosisService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetDiagnoses()
+        public async Task<IActionResult> GetDiagnosis()
         {
             try
             {
