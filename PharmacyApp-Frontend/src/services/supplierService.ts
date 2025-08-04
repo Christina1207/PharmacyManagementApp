@@ -12,7 +12,7 @@ const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
 const getSuppliers = async (): Promise<Supplier[]> => {
   const user = authService.getCurrentUser();
   const token = user?.token;
-  const response = await axios.get(`${API_URL}/Suppliers`, {
+  const response = await axios.get(`${API_URL}/suppliers`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
@@ -21,7 +21,7 @@ const getSuppliers = async (): Promise<Supplier[]> => {
 const createSupplier = async (supplierData: { name: string, phoneNumber?: string }): Promise<Supplier> => {
     const user = authService.getCurrentUser();
     const token = user?.token;
-    const response = await axios.post(`${API_URL}/Suppliers`, supplierData, {
+    const response = await axios.post(`${API_URL}/suppliers`, supplierData, {
         headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;

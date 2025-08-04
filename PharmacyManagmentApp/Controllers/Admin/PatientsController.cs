@@ -35,7 +35,6 @@ namespace PharmacyManagmentApp.Controllers.Admin
         }
 
         [HttpGet("{id}")]  // GET /api/admin/patients/{id}
-        [Authorize(Roles ="Admin,Pharmcist")]
         public async Task<IActionResult> GetPatientById(int id)
         {
             try
@@ -125,7 +124,7 @@ namespace PharmacyManagmentApp.Controllers.Admin
 
         }
 
-        [HttpGet("employees/{id}")]// GET /api/admin/patients/employees/{id}
+        [HttpGet("employees/{id}")]// GET /api/patients/employees/{id}
         public async Task<IActionResult> GetEmployeeById(int id)
         {
             try

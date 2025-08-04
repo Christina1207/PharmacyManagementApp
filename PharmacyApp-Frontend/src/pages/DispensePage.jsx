@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { Separator } from '../components/ui/separator';
 import { useToast } from '../hooks/use-toast';
 import _ from 'lodash';
 import { useAuth } from '../context/AuthContext.jsx';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 
 // --- ImportServices ---
 import patientService from '../services/patientService';
@@ -17,189 +18,273 @@ import medicationService from '../services/medicationService';
 import diagnosisService from '../services/diagnosisService';
 import prescriptionService from '../services/prescriptionService';
 
-import {User, UserCheck, Plus, Trash2, Receipt, Loader2, Stethoscope, Pill, X } from 'lucide-react';
+import { User, UserCheck, Plus, Trash2, Receipt, Loader2, Stethoscope, Pill, X, Search } from 'lucide-react';
 
 const DispensePage = () => {
-  // state for selected entities
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [selectedDiagnosis, setSelectedDiagnosis] = useState('');
-  const [prescriptionItems, setPrescriptionItems] = useState([]);
-  
-  // state for search input and results
-  const [patientSearch, setPatientSearch] = useState('');
-  const [doctorSearch, setDoctorSearch] = useState('');
-  const [medicationSearch, setMedicationSearch] = useState('');
-  
-  const [patientSuggestions, setPatientSuggestions] = useState([]);
-  const [doctorSuggestions, setDoctorSuggestions] = useState([]);
-  const [medicationSuggestions, setMedicationSuggestions] = useState([]);
-  
-  const [diagnoses, setDiagnoses] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [saleResult, setSaleResult] = useState(null);
-  const {toast } = useToast();
-  const {user}=useAuth();
- // Fetch diagnoses on component mount
-    useEffect(() => {
-        diagnosisService.getDiagnoses()
-            .then(setDiagnoses)
-            .catch(() => toast({ title: "Error", description: "Could not fetch diagnoses.", variant: "destructive" }));
-    }, [toast]);
-    
-  const debouncedSearch = useCallback(_.debounce(async (term, service, setter) => {
-    if (term.length > 1) {
+    // state for selected entities
+    const [employeeId, setEmployeeId] = useState('');
+    const [employee, setEmployee] = useState(null);
+    const [familyMembers, setFamilyMembers] = useState([]);
+    const [selectedPatientId, setSelectedPatientId] = useState(null);
+    const [selectedDoctor, setSelectedDoctor] = useState(null);
+    const [selectedDiagnosis, setSelectedDiagnosis] = useState('');
+    const [prescriptionItems, setPrescriptionItems] = useState([]);
+
+    // state for search input and results
+    const [doctorSearch, setDoctorSearch] = useState('');
+    const [medicationSearch, setMedicationSearch] = useState('');
+    const [doctorSuggestions, setDoctorSuggestions] = useState([]);
+    const [medicationSuggestions, setMedicationSuggestions] = useState([]);
+
+    // state for diagnoses
+    const [diagnoses, setDiagnoses] = useState([]);
+    const [isDiagnosisDialogOpen, setIsDiagnosisDialogOpen] = useState(false);
+    const [newDiagnosis, setNewDiagnosis] = useState('');
+
+
+    const [loading, setLoading] = useState(false);
+    const { toast } = useToast();
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    // Fetch diagnoses on component mount
+    const fetchDiagnoses = useCallback(async () => {
         try {
-            const results = await service(term);
-            setter(results);
+            const data = await diagnosisService.getDiagnoses();
+            setDiagnoses(data);
         } catch (error) {
-            console.error("Search failed:", error);
+            toast({ title: "Error", description: "Could not fetch diagnoses.", variant: "destructive" });
+        }
+    }, [toast]);
+
+    useEffect(() => {
+        fetchDiagnoses();
+    }, [fetchDiagnoses]);
+
+    const debouncedSearch = useCallback(_.debounce(async (term, service, setter) => {
+        if (term.length > 1) {
+            try {
+                const results = await service(term);
+                setter(results);
+            } catch (error) {
+                console.error("Search failed:", error);
+                setter([]);
+            }
+        } else {
             setter([]);
         }
-    } else {
-        setter([]);
-    }
-  }, 300), []);
+    }, 300), []);
 
-  useEffect(() => { debouncedSearch(patientSearch, patientService.searchPatients, setPatientSuggestions) }, [patientSearch, debouncedSearch]);
-  useEffect(() => { debouncedSearch(doctorSearch, doctorService.searchDoctors, setDoctorSuggestions) }, [doctorSearch, debouncedSearch]);
-  useEffect(() => { debouncedSearch(medicationSearch, medicationService.searchMedications, setMedicationSuggestions) }, [medicationSearch, debouncedSearch]);
+    useEffect(() => { debouncedSearch(doctorSearch, doctorService.searchDoctors, setDoctorSuggestions) }, [doctorSearch, debouncedSearch]);
+    useEffect(() => { debouncedSearch(medicationSearch, medicationService.searchMedications, setMedicationSuggestions) }, [medicationSearch, debouncedSearch]);
 
-  const addMedication = (medication) => {
-    if (!prescriptionItems.some(item => item.medicationId === medication.id)) {
-        setPrescriptionItems([...prescriptionItems, { 
-            medicationId: medication.id, 
-            medicationName: `${medication.name} ${medication.dose}`, 
-            quantity: 1 
-        }]);
-    }
-    setMedicationSearch('');
-    setMedicationSuggestions([]);
-  };
+    const handleEmployeeIdSearch = async () => {
+        if (!employeeId) return;
+        setEmployee(null);
+        setFamilyMembers([]);
+        setSelectedPatientId(null);
+        try {
+            const patientData = await patientService.getEmployeeDetailsById(employeeId);
 
-  const updateQuantity = (medId, qty) => {
-      setPrescriptionItems(prescriptionItems.map(item => 
-          item.medicationId === medId ? {...item, quantity: parseInt(qty) || 1} : item
-      ));
-  };
+            if (patientData) {
+                setEmployee(patientData);
+                setSelectedPatientId(patientData.id.toString());
+                
+                const familyMembersData = await patientService.getFamilyMembers(employeeId);
+                setFamilyMembers(familyMembersData || []);
+            } else {
+                toast({ title: "Not an Employee", description: "The ID entered does not belong to an employee.", variant: "destructive" });
+            }
+        } catch (error) {
+            toast({ title: "Error", description: "Patient not found.", variant: "destructive" });
+            setEmployee(null);
+            setFamilyMembers([]);
+        }
+    };
 
-  const removeMedication = (medId) => {
-      setPrescriptionItems(prescriptionItems.filter(item => item.medicationId !== medId));
-  };
+    const addMedication = (medication) => {
+        if (!prescriptionItems.some(item => item.medicationId === medication.id)) {
+            setPrescriptionItems([...prescriptionItems, {
+                medicationId: medication.id,
+                medicationName: `${medication.name} ${medication.dose}`,
+                quantity: 1
+            }]);
+        }
+        setMedicationSearch('');
+        setMedicationSuggestions([]);
+    };
 
-  const resetForm = () => {
-      setSelectedPatient(null);
-      setSelectedDoctor(null);
-      setSelectedDiagnosis('');
-      setPrescriptionItems([]);
-      setPatientSearch('');
-      setDoctorSearch('');
-      setMedicationSearch('');
-  };
+    const updateQuantity = (medId, qty) => {
+        setPrescriptionItems(prescriptionItems.map(item =>
+            item.medicationId === medId ? { ...item, quantity: parseInt(qty) || 1 } : item
+        ));
+    };
 
-  const handleDispense = async () => {
-    if (!selectedPatient || !selectedDoctor || !selectedDiagnosis || prescriptionItems.length === 0) {
-      toast({ title: "Validation Error", description: "Patient, doctor, diagnosis, and at least one medication are required.", variant: "destructive" });
-      return;
-    }
+    const removeMedication = (medId) => {
+        setPrescriptionItems(prescriptionItems.filter(item => item.medicationId !== medId));
+    };
+    
+    const handleCreateDiagnosis = async (e) => {
+        e.preventDefault();
+        try {
+            const created = await diagnosisService.createDiagnosis({ description: newDiagnosis });
+            toast({ title: "Success", description: "Diagnosis created." });
+            fetchDiagnoses(); // Refresh list
+            setSelectedDiagnosis(created.id.toString());
+            setIsDiagnosisDialogOpen(false);
+            setNewDiagnosis('');
+        } catch (error) {
+             toast({ title: "Error", description: "Failed to create diagnosis.", variant: "destructive" });
+        }
+    };
 
-    setLoading(true);
-    try {
-        console.log('user',user);
-const prescriptionData = {
-        PatientId: selectedPatient.id,
-        DoctorId: selectedDoctor.id,
-        DiagnosisId: parseInt(selectedDiagnosis),
-        UserId: user.id, // Add the user's ID here
-        PrescriptionItems: prescriptionItems.map(({ medicationId, quantity }) => ({ 
-            MedicationId: medicationId, // Correct casing
-            Quantity: quantity // Correct casing
-        }))
-      };
+    const handleDispense = async () => {
+        if (!selectedPatientId || !selectedDoctor || !selectedDiagnosis || prescriptionItems.length === 0) {
+            toast({ title: "Validation Error", description: "Patient, doctor, diagnosis, and at least one medication are required.", variant: "destructive" });
+            return;
+        }
 
-      const result = await prescriptionService.dispensePrescription(prescriptionData);
-      setSaleResult(result);
-      resetForm();
-    } catch (error) {
-      toast({ title: "Error", description: error.response?.data?.message || "Dispensing failed. Check stock levels.", variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
-  };
+        setLoading(true);
+        try {
+            const prescriptionData = {
+                PatientId: parseInt(selectedPatientId),
+                DoctorId: selectedDoctor.id,
+                DiagnosisId: parseInt(selectedDiagnosis),
+                UserId: user.id,
+                PrescriptionItems: prescriptionItems.map(({ medicationId, quantity }) => ({
+                    MedicationId: medicationId,
+                    Quantity: quantity
+                }))
+            };
 
-  return (
-    <div className="space-y-6">
-        <div>
-            <h1 className="text-2xl font-bold">Prescription Dispensing</h1>
-            <p className="text-muted-foreground">Process and dispense patient prescriptions</p>
-        </div>
+            const result = await prescriptionService.dispensePrescription(prescriptionData);
+            toast({ title: "Success", description: `Prescription #${result.prescriptionId} dispensed.` });
+            navigate(`/sales/${result.id}`); // Navigate to the new receipt page
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-            <div className="space-y-6">
-                <Card>
-                    <CardHeader><CardTitle className="flex items-center space-x-2"><User className="w-5 h-5" /><span>Patient</span></CardTitle></CardHeader>
-                    <CardContent>
-                        {selectedPatient ? (
-                             <div className="flex items-center justify-between p-3 border rounded-lg bg-muted">
-                                <div className="font-semibold">{selectedPatient.firstName} {selectedPatient.lastName}</div>
-                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setSelectedPatient(null)}><X className="w-4 h-4" /></Button>
-                            </div>
-                        ) : (
-                            <div>
-                                <Input placeholder="Search patient name..." value={patientSearch} onChange={e => setPatientSearch(e.target.value)} />
-                                {patientSuggestions.length > 0 && (
-                                    <div className="mt-2 border rounded-md max-h-40 overflow-y-auto">{patientSuggestions.map(p => <div key={p.id} onClick={() => { setSelectedPatient(p); setPatientSearch(''); setPatientSuggestions([]); }} className="p-2 hover:bg-muted cursor-pointer text-sm">{p.firstName} {p.lastName}</div>)}</div>
-                                )}
+        } catch (error) {
+            toast({ title: "Error", description: error.response?.data?.message || "Dispensing failed. Check stock levels.", variant: "destructive" });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="container mx-auto p-4 lg:p-6 space-y-6">
+            <Card className="max-w-4xl mx-auto">
+                <CardHeader>
+                    <CardTitle className="text-2xl">New Prescription</CardTitle>
+                    <CardDescription>Fill out the details below to dispense a new prescription.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                    {/* Patient Section */}
+                    <div className="space-y-4">
+                        <Label htmlFor="employeeId" className="font-semibold text-lg">Patient Information</Label>
+                        <div className="flex items-center gap-2">
+                            <Input
+                                id="employeeId"
+                                placeholder="Enter Employee ID"
+                                value={employeeId}
+                                onChange={(e) => setEmployeeId(e.target.value)}
+                                className="max-w-xs"
+                            />
+                            <Button onClick={handleEmployeeIdSearch}>
+                                <Search className="w-4 h-4 mr-2" /> Find
+                            </Button>
+                        </div>
+                        {employee && (
+                            <div className="p-4 border rounded-lg bg-secondary/50 space-y-3">
+                                <h3 className="font-medium">{employee.firstName} {employee.lastName}</h3>
+                                <Select value={selectedPatientId} onValueChange={setSelectedPatientId}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select Patient..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value={employee.id.toString()}>
+                                            {employee.firstName} {employee.lastName} (Employee)
+                                        </SelectItem>
+                                        {familyMembers.map(member => (
+                                            <SelectItem key={member.id} value={member.id.toString()}>
+                                                {member.firstName} {member.lastName} ({member.relationship})
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                         )}
-                    </CardContent>
-                </Card>
+                    </div>
 
-                <Card>
-                    <CardHeader><CardTitle className="flex items-center space-x-2"><UserCheck className="w-5 h-5" /><span>Doctor</span></CardTitle></CardHeader>
-                    <CardContent>
-                         {selectedDoctor ? (
-                             <div className="flex items-center justify-between p-3 border rounded-lg bg-muted">
+                    <Separator />
+
+                    {/* Doctor Section */}
+                    <div className="space-y-4">
+                        <Label className="font-semibold text-lg">Prescribing Doctor</Label>
+                        {selectedDoctor ? (
+                            <div className="flex items-center justify-between p-3 border rounded-lg bg-muted">
                                 <div className="font-semibold">{selectedDoctor.firstName} {selectedDoctor.lastName} <span className="text-sm text-muted-foreground">({selectedDoctor.speciality})</span></div>
                                 <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setSelectedDoctor(null)}><X className="w-4 h-4" /></Button>
                             </div>
                         ) : (
-                            <div>
-                                <Input placeholder="Search doctor name..." value={doctorSearch} onChange={e => setDoctorSearch(e.target.value)} />
+                            <div className="relative">
+                                <Input placeholder="Search doctor by name..." value={doctorSearch} onChange={e => setDoctorSearch(e.target.value)} />
                                 {doctorSuggestions.length > 0 && (
-                                    <div className="mt-2 border rounded-md max-h-40 overflow-y-auto">{doctorSuggestions.map(d => <div key={d.id} onClick={() => { setSelectedDoctor(d); setDoctorSearch(''); setDoctorSuggestions([]); }} className="p-2 hover:bg-muted cursor-pointer text-sm">{d.firstName} {d.lastName}</div>)}</div>
+                                    <div className="absolute z-10 w-full mt-1 bg-background border rounded-md shadow-lg max-h-40 overflow-y-auto">
+                                        {doctorSuggestions.map(d => (
+                                            <div key={d.id} onClick={() => { setSelectedDoctor(d); setDoctorSearch(''); setDoctorSuggestions([]); }} className="p-3 hover:bg-muted cursor-pointer">
+                                                <p className="font-medium">{d.firstName} {d.lastName}</p>
+                                                <p className="text-sm text-muted-foreground">{d.speciality}</p>
+                                            </div>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
                         )}
-                    </CardContent>
-                </Card>
-                
-                <Card>
-                    <CardHeader><CardTitle className="flex items-center space-x-2"><Stethoscope className="w-5 h-5" /><span>Diagnosis</span></CardTitle></CardHeader>
-                    <CardContent>
-                        <Select value={selectedDiagnosis} onValueChange={setSelectedDiagnosis}>
-                            <SelectTrigger><SelectValue placeholder="Select a diagnosis" /></SelectTrigger>
-                            <SelectContent>
-                                {diagnoses.map(d => <SelectItem key={d.id} value={d.id.toString()}>{d.description}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </CardContent>
-                </Card>
-            </div>
+                    </div>
 
-            <div className="space-y-6">
-                <Card>
-                    <CardHeader><CardTitle className="flex items-center space-x-2"><Pill className="w-5 h-5" /><span>Medications</span></CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <div>
-                            <Label htmlFor="medicationSearch">Add Medication</Label>
-                            <Input id="medicationSearch" placeholder="Search medication name or barcode..." value={medicationSearch} onChange={e => setMedicationSearch(e.target.value)} />
-                            {medicationSuggestions.length > 0 && (
-                                <div className="mt-2 border rounded-md max-h-40 overflow-y-auto">{medicationSuggestions.map(m => <div key={m.id} onClick={() => addMedication(m)} className="p-2 hover:bg-muted cursor-pointer text-sm">{m.name} {m.dose}</div>)}</div>
+                    <Separator />
+                    
+                    {/* Diagnosis Section */}
+                    <div className="space-y-4">
+                        <Label className="font-semibold text-lg">Diagnosis</Label>
+                         <div className="flex items-center gap-2">
+                            <Select value={selectedDiagnosis} onValueChange={setSelectedDiagnosis}>
+                                <SelectTrigger><SelectValue placeholder="Select a diagnosis" /></SelectTrigger>
+                                <SelectContent>
+                                    {diagnoses.map(d => <SelectItem key={d.id} value={d.id.toString()}>{d.description}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                             <Dialog open={isDiagnosisDialogOpen} onOpenChange={setIsDiagnosisDialogOpen}>
+                                <DialogTrigger asChild><Button variant="outline"><Plus className="w-4 h-4 mr-2" />New</Button></DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader><DialogTitle>Add New Diagnosis</DialogTitle></DialogHeader>
+                                    <form onSubmit={handleCreateDiagnosis} className="space-y-4">
+                                        <Input placeholder="Diagnosis description..." value={newDiagnosis} onChange={e => setNewDiagnosis(e.target.value)} required />
+                                        <Button type="submit" className="w-full">Create Diagnosis</Button>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Medications Section */}
+                    <div className="space-y-4">
+                        <Label className="font-semibold text-lg">Medications</Label>
+                         <div className="relative">
+                            <Input placeholder="Search for medications to add..." value={medicationSearch} onChange={e => setMedicationSearch(e.target.value)} />
+                             {medicationSuggestions.length > 0 && (
+                                <div className="absolute z-10 w-full mt-1 bg-background border rounded-md shadow-lg max-h-40 overflow-y-auto">
+                                    {medicationSuggestions.map(m => (
+                                        <div key={m.id} onClick={() => addMedication(m)} className="p-3 hover:bg-muted cursor-pointer">
+                                            <p className="font-medium">{m.name} {m.dose}</p>
+                                            <p className="text-sm text-muted-foreground">{m.manufacturerName}</p>
+                                        </div>
+                                    ))}
+                                </div>
                             )}
                         </div>
-
-                        <div className="space-y-3">
+                        
+                        <div className="space-y-3 pt-4">
                             {prescriptionItems.map(item => (
                                 <div key={item.medicationId} className="flex items-center justify-between p-3 border rounded-lg">
                                     <span className="font-medium text-sm">{item.medicationName}</span>
@@ -210,37 +295,20 @@ const prescriptionData = {
                                     </div>
                                 </div>
                             ))}
-                            {prescriptionItems.length === 0 && <div className="text-center py-8 text-muted-foreground"><Plus className="w-8 h-8 mx-auto mb-2 opacity-50" /><p>No medications added</p></div>}
+                            {prescriptionItems.length === 0 && <div className="text-center py-8 text-muted-foreground"><Pill className="w-8 h-8 mx-auto mb-2 opacity-50" /><p>No medications added</p></div>}
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                    
+                    <Separator/>
 
-                <Button onClick={handleDispense} disabled={loading} className="w-full" size="lg">
-                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Receipt className="w-5 h-5 mr-2" />}
-                    Dispense Prescription
-                </Button>
-            </div>
+                    <Button onClick={handleDispense} disabled={loading} className="w-full" size="lg">
+                        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Receipt className="w-5 h-5 mr-2" />}
+                        Dispense & Finalize Sale
+                    </Button>
+                </CardContent>
+            </Card>
         </div>
-        
-        <AlertDialog open={!!saleResult} onOpenChange={() => setSaleResult(null)}>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Dispensing Successful!</AlertDialogTitle>
-                    <AlertDialogDescription>Sale #{saleResult?.id} created for prescription #{saleResult?.prescriptionId}.</AlertDialogDescription>
-                </AlertDialogHeader>
-                <div className="space-y-2 text-sm">
-                    <div className="flex justify-between"><span>Subtotal:</span><span className="font-mono">${saleResult?.totalAmount.toFixed(2)}</span></div>
-                    <div className="flex justify-between"><span>Discount (Coverage):</span><span className="font-mono text-green-600">-${saleResult?.discount.toFixed(2)}</span></div>
-                    <Separator />
-                    <div className="flex justify-between font-bold text-base"><span>Amount Paid by Patient:</span><span className="font-mono">${saleResult?.amountReceived.toFixed(2)}</span></div>
-                </div>
-                <AlertDialogFooter>
-                    <AlertDialogAction onClick={() => setSaleResult(null)}>Close</AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    </div>
-  );
+    );
 };
 
 export default DispensePage;

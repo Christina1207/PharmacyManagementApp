@@ -10,6 +10,11 @@ export interface Patient {
     patientType: 'Employee' | 'FamilyMember';
 }
 
+export interface FamilyMember extends Patient {
+    employeeId: number;
+    relationship: string;
+}
+
 export interface EmployeePayload {
   firstName: string;
   lastName: string;
@@ -44,11 +49,31 @@ const getPatients = async (): Promise<Patient[]> => {
 };
 
 /**
+ * [Search] Fetches a single patient by their ID.
+ */
+const getPatient = async (id: number): Promise<Patient> => {
+    // NOTE: Assuming a standard REST endpoint for fetching a single patient.
+    // This may need to be adjusted if the backend endpoint is different.
+    const response = await apiClient.get(`/api/patients/${id}`);
+    return response.data;
+};
+
+
+/**
  * [Search] Fetches only patients matching a search term for autocomplete.
  * Corresponds to: GET /api/search/patients?term=...
  */
 const searchPatients = async (term: string): Promise<Patient[]> => {
     const response = await apiClient.get(`/api/search/patients?term=${term}`);
+    return response.data;
+};
+
+/**
+ * [Search] Fetches family members for a given employee.
+ * Corresponds to: GET /api/patients/employees/{employeeId}/familymembers
+ */
+const getFamilyMembers = async (employeeId: number): Promise<FamilyMember[]> => {
+    const response = await apiClient.get(`/api/patients/employees/${employeeId}/familymembers`);
     return response.data;
 };
 
@@ -62,7 +87,7 @@ const activatePatient = async (id: number): Promise<void> => {
 
 /**
  * [Management] Deactivates a patient's account.
- * Corresponds to: PUT /api/admin/patients/{id}/deactivate
+ * Corresponds to: PUT /api/admin/patients/${id}/deactivate
  */
 const deactivatePatient = async (id: number): Promise<void> => {
     await apiClient.put(`/api/patients/${id}/deactivate`);
@@ -86,7 +111,7 @@ const addFamilyMember = async (employeeId: number, memberData: FamilyMemberPaylo
     return response.data;
 };
 const getEmployeeDetailsById = async (id: number): Promise<EmployeeDetails> => {
-    const response = await apiClient.get(`/api/employees/${id}/details`);
+    const response = await apiClient.get(`/api/patients/employees/${id}`);
     return response.data;
 };
 
@@ -94,7 +119,9 @@ const getEmployeeDetailsById = async (id: number): Promise<EmployeeDetails> => {
 
 export default {
     getPatients,
+    getPatient,
     searchPatients,
+    getFamilyMembers,
     activatePatient,
     deactivatePatient,
     createEmployee,
